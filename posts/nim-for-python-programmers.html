@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><title>Subset Park: Nim for Python Programmers</title><meta name=viewport content="width=device-width, initial-scale=1.0"><meta name=description content="{loglevel, debug}"><meta name=author content="Z. D. Smith"><link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap" rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel=stylesheet><link href=../assets/bootstrap.min.css rel=stylesheet><link href=../assets/bootstrap-responsive.min.css rel=stylesheet><link href=../assets/styles.css rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/styles/ascetic.min.css><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/highlight.min.js></script><script>hljs.initHighlightingOnLoad();</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><link rel=alternate type=application/rss+xml title=RSS href=../feed.xml></head> <body> <div class=container> <div class=row> <div class=col-md-1></div> <div class=col-md-10> <div class=masthead> <div class=navbar> <div class=navbar-inner> <div class=container> <ul class=nav> <li class=active><a href=../index.html>Home</a></li> <li><a href=../posts/index.html>Posts</a></li> <li><a href=../notes/index.html>Notes</a></li> <li><a href=../pages/about.html>About</a></li> <li><a href=../pages/illustrated-whist.html>Illustrated Whist</a></li> </ul> </div> </div> </div><!-- /.navbar --> </div> <div class=body> <div class=container> <div class=row> <div class=col-md-7> <h1>Nim for Python Programmers</h1> <p class=post-info> 2017-02-19 </p> <p>I've been spending a lot of time with the <a href=http://nim-lang.org>Nim</a> programming language recently. It's a great language: its principles, roughly, are to achieve the efficiency and speed of C with a much greater level of safety and expressiveness. It also so happens to take a lot of its surface-level syntactic cues from Python, including code structuring through significant whitespace and colons---that plus its emphasis on expressiveness make it very appealing and inviting to a Python programmer (like myself) who wants greater type safety and greater speed in their code.</p> <p>The <a href=https://github.com/nim-lang/Nim/wiki/Nim-for-Python-Programmers>Nim for Python Programmers</a> page on the <a href=https://github.com/nim-lang/Nim/wiki>Nim Wiki</a> has a useful overview of some of the most salient differences between Nim and Python for those just diving in. After all, it's <em>not</em> actually just Python With Types; it's more like C With All The Features That Make Python So Pleasant (and some more besides). Things like homogeneous arrays/lists, significantly reduced emphasis on object-oriented design, static typing, strings vs. chars---all of those will crop up if you sit down and start typing Python into <code>foo.nim</code>.</p> <p>I want to spend a little time, however, thinking about some of the more subtle differences between Nim and Python: the things that will crop up after you've learned the Nim syntax but are still writing the language with a Pythonic frame of mind.</p> <h1>Types, Classes, and Types</h1> <p>Something that Python programmers will do now and then (and probably more than we think we do) is <em>runtime type inspection</em>, or <em>type introspection</em>. In other words, we will examine the type of an object in our code and make decisions based on that type. We might have code like this:</p> <pre><code class=language-py>def time_travel(d):
+    if isinstance(d, date):
+        d = datetime.combine(d, time(0))
+    # keep going...
+</code></pre> <p>That is, when we enter <code>time_travel</code> we don't actually know <em>what</em> <code>d</code> is, so we find out what it is as a part of our runtime logic and take some action based on what we find out. In this case we are performing some operation on <code>d</code> that expects a datetime (maybe it relies on a method on the <code>datetime</code> class), but (hopefully!) we don't actually care what time of day it contains, so we create a dummy datetime. But we could also raise an error, log something, or even take a completely different action.</p> <p>In a way it's kind of the shadow side to <a href=https://en.wikipedia.org/wiki/Duck_typing>duck typing</a>. Under duck typing, we try not to care <em>what</em> the type is of any object; we just expect it to have the methods we care about. But sometimes we have to care; then we can check out the type or class of an object in the middle of a function and make a decision at runtime.</p> <p>This kind of behavior, to the Nim compiler, is nonsensical. In Nim and many of its statically typed brethren, <em>a type isn't a type if you don't know it at compile time</em>. That is, in a language like Nim, you as the programmer already need to know exactly what <code>d</code> is when you're writing <code>time_travel</code>. After all, you need to tell the compiler[^adt]:</p> <pre><code class=language-nimrod>proc timeTravel(d: Datetime)
+</code></pre> <p>[^adt]: In this particular example, the Nim <code>times</code> module doesn't distinguish between Dates and Datetimes; there's just Time, which has all the precision of Datetime. From a Python perspective this seems restrictive; however, after a little while you might realize that the reason you need both <code>date</code> and <code>datetime</code> in Python is because they're not types, but <em>classes</em>---they implement useful and sometimes mutually exclusive methods. When you boil away the methods and you're left with just the data and its structure, you don't need nearly as many types in Nim as you need classes in Python.</p> <h2>You Can't Do That</h2> <p>This is what we mean by <em>type safety</em>. The part of type safety that we all can get behind and appreciate is that the language won't let us do something we obviously didn't mean to do, like call <code>time_travel(28)</code> or <code>time_travel(&quot;bacon&quot;)</code>. But what can we do if we want to accept <em>either</em> a date <em>or</em> a datetime?</p> <p>Well, the first answer is that as you write more type-safe code, you will find that this doesn't actually crop up nearly as often as it does in a language like Python. Odds are that when I wrote the Python function above, it came out like that because I wrote a function that took a datetime <code>time_travel</code>, and then wrote some logic that called it with a datetime:</p> <pre><code class=language-py>today = utcnow()
+time_travel(today)
+</code></pre> <p>And then a while later, I had some other totally different logic that called that same function:</p> <pre><code class=language-py>requested_date = date(requested_year, requested_month, requested_day)
+time_travel(requested_date)
+</code></pre> <p>And it called it with a date, which caused an exception (at runtime). Whoops. I might not have even noticed---I'm sure there are lots of places where I do this exact same thing and it <em>doesn't</em> crash, because you can do an awful lot of the same things with dates that you can do with datetimes. So I added the line to just do the right thing and convert it and not crash.</p> <p>But the only reason I wrote the second chunk of logic in the way that I did is because I didn't remember and didn't particularly care that my first function actually worked on datetimes, not dates!</p> <p>And in fact, it's just as possible that I had <em>both</em> of those call sites looking just like they do above, and it was the original function <code>time_travel</code> that I changed. Maybe the first version of the function only called the attributes of <code>d</code> that are shared in common between dates and datetimes, but then I added some functionality that only worked for datetimes. Now suddenly half of my invocations are broken. Let's hope they were all tested.</p> <p>If I had been writing in a more type-safe language, the compiler would have yelled at me whenever I called <code>time_travel</code> on a <code>date</code> (whether or not <code>time_travel</code> relied on any methods that only exist for datetimes). This means we don't have to roll the dice when making the above sorts of changes. I'd always know what sorts of data were being passed into the function and what it relied on, even as those things changed over time.</p> <h2>You Can Do Cool Stuff</h2> <p>So, what are we really trying to do, with all this type inspection that's suddenly off-limits? Inspecting the type/class of an object at runtime is always the means to some end; what is it accomplishing for us?</p> <p>It comes down to a question of <em>polymorphism</em>: how do we implement the same or similar behaviors for different data types?</p> <p>I say &quot;similar&quot;---after all, in <code>time_travel</code> above the behavior is not actually the same for both types. It's a little more like this:</p> <pre><code class=language-py>
+class MyDatetime:
+
+    def time_travel(self, time=None):
+        &quot;&quot;&quot;
+        Do cool stuff here
+        &quot;&quot;&quot;
+        time = time or self.time()
+        ...
+
+class MyDate(MyDatetime):
+
+    def time_travel(self):
+        &quot;&quot;&quot;
+        Construct a datetime and then do cool stuff
+        &quot;&quot;&quot;
+        dummy_time = time(0)
+        super().time_travel(time=dummy_time)
+</code></pre> <p>That is, the behavior of <code>time_travel</code> when <code>d</code> is a <code>date</code> is a superset of the behavior when <code>d</code> is a <code>datetime</code>. We could argue the merits of Python's thoroughly class-based, object-oriented approach, but it's not available in Nim.</p> <p>Luckily, Nim has a trick that Python doesn't have, which makes up for quite a bit of where we'd use classes for polymorphism: <a href=https://en.wikipedia.org/wiki/Function_overloading>procedure overloading</a>. You must declare the types of all procedure parameters in Nim; however, you are also able to declare multiple procedures with the same name (and even arity), with different parameter types.</p> <pre><code class=language-nim>proc timeTravel(d: Datetime) = 
+  echo &quot;This is one great procedure!&quot;
+
+proc timeTravel(d: Date) =
+  echo &quot;I'm getting there...&quot;
+  d.toDatetime().timeTravel()
+</code></pre> <p>In Python, our second <code>timeTravel</code> would clobber the first; in Nim, we have actually defined two separate procedures and the compiler will resolve procedure calls to the right one based on the number and type of the arguments given at the call site.</p> <p>What this means is that you can achieve some of the semantics of OO style through totally different (and arguably much simpler) means.</p> <p>One of the really elegant things about the OO message-passing style is that the messages you pass to objects can have really powerful, unified semantics; you're essentially saying, &quot;in my domain, <code>timeTravel</code> has meaning. It's up to everybody to implement what <code>timeTravel</code> means to them.&quot; This is often much nicer than having to write <code>timeTravelDate</code> when you're operating on Dates, and <code>timeTravelDatetime</code> when you're operating on Datetimes. When you're writing your business logic, you don't care about what type every object is. If something doesn't implement <code>timeTravel</code> yet, you'll fill it in.</p> <p>In fact, using procedure overloading you can accomplish much the same flow. To adopt a slightly simpler example, we'll use the classic barnyard scenario:</p> <pre><code class=language-py>class Cow:
+    def speak(self):
+        print &quot;moo&quot;
+
+class Chicken:
+    def speak(self):
+        print &quot;bok bok&quot;
+
+class Farmer:
+    &quot;&quot;&quot;
+    TODO: implement `speak`
+    &quot;&quot;&quot;
+    raise NotImplementedError()
+</code></pre> <p>You know you can do nice things like write</p> <pre><code class=language-py>...
+denizen = randomly_get_barnyard_denizen()
+denizen.speak()
+</code></pre> <p>And if <code>denizen</code> happens to be a <code>Cow</code>, you'll see &quot;moo&quot;, and if it happens to be a <code>Chicken</code>, you'll see &quot;bok bok&quot;. Nice. (And if it happens to be a <code>Farmer</code>, you'll blow up at runtime[^notimplemented]. Not so nice.)</p> <p>[^notimplemented]: Alternately, if you didn't raise inside Farmer.speak(), you would just have a subtle runtime bug where one third of your calls fails silently (literally).</p> <p>The good news is that with procedure overloading you can write Nim code like this</p> <pre><code class=language-nimrod>type
+  Cow = object
+  Chicken = object
+  Farmer = object
+
+proc speak(c: Cow) =
+    echo &quot;moo&quot;
+
+proc speak(c: Chicken) =
+    echo &quot;bok bok&quot;
+</code></pre> <p>And the message-like semantic concentration of <code>speak</code> is preserved. And with Nim's <em>unified call syntax</em>, we can express <code>speak(c)</code> as <code>c.speak()</code> to preserve method-style invocation. And what else is nice is that if we have some <code>Farmer</code> <code>f</code>, and call <code>speak(f)</code>, we will at compile-time know that <code>speak</code> is not implemented for <code>Farmer</code>:</p> <pre><code>scratch.nim(13, 2) Error: type mismatch: got (Farmer)
+but expected one of:
+proc speak(c: Cow)
+proc speak(c: Chicken)
+</code></pre> <h2>With Great Power</h2> <p>What you <em>can't</em> do in Nim is implement <code>randomly_get_barnyard_denizen</code>. Because the return type of <code>randomly_get_barnyard_denizen</code> is going to be something like <code>Cow | Chicken | Farmer</code>, and that doesn't compile.</p> <pre><code class=language-nimrod>proc randomlyGetBarnyardDenizen(): Farmer | Chicken | Cow =
+  let randomChoice = random(2)
+  case randomChoice:
+    of 0:
+      result = Farmer()
+    of 1:
+      result = Chicken()
+    else:
+      result = Cow()
+
+randomize()
+
+discard randomlyGetBarnyardDenizen()
+</code></pre> <p>Gets you:</p> <pre><code>scratch.nim(14, 14) Error: type mismatch: got (Chicken) but expected 'Farmer = object'
+</code></pre> <p>So that's a limitation. That is probably going to be your first indication that <em>types are not classes</em>. In fact, if you have a function in your program that <em>might</em> return a <code>Cow</code>, and <em>might</em> return a <code>Chicken</code>, depending on some factor not known at compile time (the contents of a text file, maybe, or a random number), then maybe they are actually the <em>same type</em>. Maybe when you boil them down to the actual structure of their data, and where they're used, they're the same; maybe it's just the behavior that differs. In Python we would use a class to implement this, but we don't need to do that in Nim.</p> <p>In Python we are used to setting up a bunch of classes in order to concretize our domain; if we have three types of thing (three &quot;nouns&quot;), we'll make three classes. Type-safe programming asks us to think a little more rigorously about the ontology of our application. It's not just a matter of laying out the objects that we think make up our domain; do our procedures reflect that ontology as well?</p> <p>With this in mind, we might decide to use a simple <code>enum</code> to capture the variations amongst the different different barnyard denizens, and restructure the program like this:</p> <pre><code class=language-nimrod>import random
+
+type
+  DenizenKind = enum
+    chicken, cow, farmer
+  BarnyardDenizen = object
+    kind: DenizenKind
+
+proc randomlyGetBarnyardDenizen(): BarnyardDenizen =
+  let newKind = random(0..3).DenizenKind
+  result = BarnyardDenizen(kind: newKind)
+
+proc speak(bd: BarnyardDenizen) =
+  case bd.kind:
+    of cow:
+      echo &quot;moo&quot;
+    of chicken:
+      echo &quot;bok bok&quot;
+    else:
+      echo &quot;we haven't figured this out yet&quot;
+
+randomize()
+let bd = randomlyGetBarnyardDenizen()
+bd.speak()
+</code></pre> <p>Now we have one type, and what needs to be determined at runtime---the kind of our denizen---is a value, accessible at runtime. Meanwhile, we've still managed to isolate and control this now-runtime-dependent value in a type-safe way using an enum. In this particular case, our need for polymorphism has gone away entirely.</p> <p>Of course, as our program increases in complexity and we need to do many different things with these different types of denizens, we'll probably want to make use of the more advanced features provided by the language when it comes to polymorphism and expressiveness; <a href=https://nim-lang.org/docs/tut2.html#object-oriented-programming>inheritance</a>, <a href=https://nim-lang.org/docs/tut2.html#generics>generics</a>, <a href=https://nim-lang.org/docs/tut2.html#templates>templates</a>, and <a href=https://nim-lang.org/docs/tut2.html#macros>macros</a> all provide different and more complex ways to implement powerful, polymorphic behavior.</p> <h2>The Future is Bright</h2> <p>It's clear that writing in Nim requires a keener understanding of the structure and relationships between the data in our programs. At the same time, I strongly believe that writing in it will be a much more pleasant experience than the statically-typed, compiled status quo for any programmer used to the expressiveness and freedom of writing in Python or other dynamically typed, interpreted languages.</p> </div> <div class=col-md-3> <h3>Recent Posts</h3> <table class=recent-posts> <tr> <td style=white-space:nowrap>2022-02-19</td> <td><a href=../posts/a-specification-of-a-note-taking-program.html>A Specification of a Note-Taking Program</a></td> </tr> <tr> <td style=white-space:nowrap>2021-03-20</td> <td><a href=../posts/algorithms-im-proud-of-fill.html>Algorithms I'm Proud Of: Fill</a></td> </tr> <tr> <td style=white-space:nowrap>2020-12-10</td> <td><a href=../posts/bagatto-a-new-static-site-generator.html>Bagatto, a New Static Site Generator</a></td> </tr> <tr> <td style=white-space:nowrap>2020-11-22</td> <td><a href=../posts/a-regular-simplification-of-offenbacher-schrift.html>A Regular Simplification of Offenbacher Schrift</a></td> </tr> <tr> <td style=white-space:nowrap>2020-08-20</td> <td><a href=../posts/mariglia.html>Mariglia</a></td> </tr> </table> </div> </div> </div> </div> <hr> <div class=footer>Built with <a href=https://bagatto.co>Bagatto.</a></div> </div> </div> </div> </body> </html> 

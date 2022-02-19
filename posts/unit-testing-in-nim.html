@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><title>Subset Park: Unit Testing in Nim</title><meta name=viewport content="width=device-width, initial-scale=1.0"><meta name=description content="{loglevel, debug}"><meta name=author content="Z. D. Smith"><link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap" rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel=stylesheet><link href=../assets/bootstrap.min.css rel=stylesheet><link href=../assets/bootstrap-responsive.min.css rel=stylesheet><link href=../assets/styles.css rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/styles/ascetic.min.css><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/highlight.min.js></script><script>hljs.initHighlightingOnLoad();</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><link rel=alternate type=application/rss+xml title=RSS href=../feed.xml></head> <body> <div class=container> <div class=row> <div class=col-md-1></div> <div class=col-md-10> <div class=masthead> <div class=navbar> <div class=navbar-inner> <div class=container> <ul class=nav> <li class=active><a href=../index.html>Home</a></li> <li><a href=../posts/index.html>Posts</a></li> <li><a href=../notes/index.html>Notes</a></li> <li><a href=../pages/about.html>About</a></li> <li><a href=../pages/illustrated-whist.html>Illustrated Whist</a></li> </ul> </div> </div> </div><!-- /.navbar --> </div> <div class=body> <div class=container> <div class=row> <div class=col-md-7> <h1>Unit Testing in Nim</h1> <p class=post-info> 2017-05-07 </p> <h2>Unit Testing in Nim and Python</h2> <p>Here's a snippet of a unittest test case that I wrote in Python some years ago:</p> <pre><code class=language-py>class TestClasses(TestCase):
+
+    def setUp(self):
+        self.ace_diamonds = Card(Rank.Ace, Suit.DIAMONDS)
+        self.king_clubs = Card(Rank.King, Suit.CLUBS)
+        self.ace_clubs = Card(Rank.Ace, Suit.CLUBS)
+        
+    def test_card(self):
+        self.assertGreater(self.ace_diamonds, self.king_clubs)
+        self.assertEquals(self.ace_diamonds, self.ace_clubs)
+</code></pre> <p>As you might guess, it was testing a class involved in a card game. It should be familiar to most Python programmers; <code>TestClasses</code> is a class inheriting from <code>unittest.TestCase</code>, which defines a method <code>test_card</code>. The test runner of my choice will read the module, instantiate the test case class, and then run any methods beginning with <code>test_</code>. In that method, I set up a few objects and then run some asserts on them.</p> <p>Now, notice straight away---Python has an <code>assert</code> keyword, but I don't use it here. Instead I use a couple of unittest's own assertion methods, which are numerous; there's one for most every kind of relationship you might want to assert over. Why use them instead of bare assert? Because the methods, knowing what kind of assertion they are and having access to the arguments, are able to produce much more informative error messages. If I change one of these assertions so it fails, here's the traceback:</p> <pre><code class=language-py>Traceback (most recent call last):
+  File &quot;/home/zax/code/pyquet/tests/test-pyquet.py&quot;, line 20, in test_card
+    self.assertLess(ace_diamonds, king_clubs)
+AssertionError: Ace♢ not less than King♧
+</code></pre> <p>unittest is able to call the Card class's <code>__repr__</code> method and produce a failure message that tells me why the assertion failed.</p> <p>Compare that to what you see if you just use <code>assert</code>:</p> <pre><code class=language-py>Traceback (most recent call last):
+  File &quot;/home/zax/code/pyquet/tests/test-pyquet.py&quot;, line 20, in test_card
+    assert ace_diamonds &lt; king_clubs
+AssertionError
+</code></pre> <p>Speaking more generally, unittest can evaluate all kinds of expressions when performing asserts. Compare</p> <pre><code>Traceback (most recent call last):
+  File &quot;/home/zax/code/pyquet/tests/test-pyquet.py&quot;, line 21, in test_card
+    self.assertLess(math.sqrt(5), math.sqrt(2))
+AssertionError: 2.23606797749979 not less than 1.4142135623730951
+</code></pre> <p>to</p> <pre><code class=language-py>Traceback (most recent call last):
+  File &quot;/home/zax/code/pyquet/tests/test-pyquet.py&quot;, line 21, in test_card
+    assert math.sqrt(5) &lt; math.sqrt(2)
+AssertionError
+</code></pre> <h2>Unit testing in Nim</h2> <p>Here's a pretty straightforward translation of the above method into Nim:</p> <pre><code class=language-nimrod>type
+  Card = object
+    rank: Rank
+    suit: Suit
+  Rank = enum
+    crSeven
+    crEight
+    crNine
+    crTen
+    crJack
+    crQueen
+    crKing
+    crAce
+  Suit = enum
+    csClubs = &quot;♧&quot;
+    csDiamonds = &quot;♢&quot;
+    csHearts = &quot;♡&quot;
+    csSpades = &quot;♤&quot;
+
+proc `&lt;`(a,b: Card): bool = a.rank &lt; b.rank
+
+when isMainModule:
+  let
+    aceDiamonds = Card(rank: crAce, suit: csDiamonds)
+    kingClubs = Card(rank: crKing, suit: csClubs)
+    aceClubs = Card(rank: crAce, suit: csClubs)
+
+  assert aceDiamonds &gt; kingClubs
+  assert aceDiamonds == aceClubs
+</code></pre> <p>We declare our types, implement <code>&lt;</code> (the <code>&gt;</code> operator is just sugar for backwards <code>&lt;</code>) and use <code>isMainModule</code>[^main] to do some quick tests. When we compile and run, we get a traceback:</p> <pre><code>Traceback (most recent call last)
+unittest.nim(34)         unittest
+system.nim(3518)         failedAssertImpl
+system.nim(3510)         raiseAssert
+system.nim(2620)         sysFatal
+Error: unhandled exception: aceDiamonds == aceClubs  [AssertionError]
+</code></pre> <p>Now, we already get a little bit for free here; the <code>AssertionError</code> is kind enough to isolate the expression that evaluated as false (we conclude that <code>aceDiamonds</code> is not equal to <code>aceClubs</code>), but it's not exactly a <em>test</em>. The rest of the module wouldn't get run, for instance, and we don't get any visual feedback about the other check.</p> <p>[^main]: This is nice; it means that if this module were to be imported and used in some application, that logic wouldn't even be compiled into the binary, let alone evaluated. Like <code>if __name__ == &quot;__main__&quot;</code> on steroids, as they said in the 90s.</p> <p>So we decide to use Nim's own <a href=https://nim-lang.org/docs/unittest.html>unittest</a> module.</p> <pre><code class=language-nimrod>when isMainModule:
+  import unittest
+  suite &quot;test card relations&quot;:
+
+    setup:
+      let
+        aceDiamonds = Card(rank: crAce, suit: csDiamonds)
+        kingClubs = Card(rank: crKing, suit: csClubs)
+        aceClubs = Card(rank: crAce, suit: csClubs)
+
+    test &quot;greater than&quot;:
+      check:
+        aceDiamonds &gt; kingClubs
+        aceClubs &gt; kingClubs
+    test &quot;equal to&quot;:
+      check aceDiamonds == aceClubs
+</code></pre> <p>This should all be pretty readable. We declare a <code>suite</code>---that's like a <code>TestCase</code>---with a <code>setup</code> block---that's like a <code>setUp()</code> method---and then two <code>test</code>s. In the tests we use the <code>check</code> statement to do our assertions.</p> <p>Now our test output is a little more informative:</p> <pre><code>[Suite] test card relations
+  [OK] greater than
+    pyquest.nim(35,24): Check failed: aceDiamonds == aceClubs
+    aceDiamonds was (rank: crAce, suit: ♢)
+    aceClubs was (rank: crAce, suit: ♧)
+  [FAILED] equal to
+</code></pre> <p>It turns out we forgot to implement <code>==</code>. Without a <code>==</code> proc written for the <code>Card</code> type, Nim was using default object comparison. Implementing that proc produces this test output:</p> <pre><code>[Suite] test card relations
+  [OK] greater than
+  [OK] equal to
+</code></pre> <h3>Checkpoint A</h3> <p>The above is all you need to understand writing simple unit tests in Nim. We can see that the basic structure of a Nim unittest follows very closely to that of a unittest TestCase: test case, setup, tests, teardown.</p> <h3>Checkpoint B</h3> <p>One thing that's worth pointing out is that while the structure of the two test suites is very similar, the style of the code is different. The Python code is structured as a class, where each test is a method. Further, the assertions are methods of the base class that the test case inherits from. This makes sense, as Python is a fundamentally object-oriented language, and class inheritance is one of the main ways that things get done in a Python program.</p> <p>On the other hand, the Nim code is a little more stripped down; the same behavior is accomplished, but there's no base class to inherit from, and no <code>self</code> that's passed from method to method. And the assertions inside the <code>check</code> calls are expressed as normal expressions, rather than specialty methods expressing specific relations. And yet the same <code>check</code> call is able to evaluate an expression as well as output its location in the source, without requiring a traceback.</p> <p>In short, this is possible in Nim in a way that it isn't possible in Python because Nim has an extremely powerful <em>macro</em> system.</p> <p>It's not my intention to dive into the specifics of writing macros in Nim here. Nim macros, like macros in any language, are extremely powerful and can be quite difficult to reason about, as they allow the programmer to operate at two levels at once: both within the evaluation context of the language, as well as above it, interacting with and modifying the syntax tree of the language itself.</p> <p>But this also means that they are extremely effective at creating <em><a href=https://en.wikipedia.org/wiki/Domain-specific_language>DSLs</a></em> in ways that other languages simply don't have at their disposal. Statements like <code>check</code> and <code>suite</code> in the Nim unittest module almost act like additions to the syntax of the language itself; they're not functions or classes, operating at runtime; they operate at compilation, accepting the tests written by the programmer as <a href=https://en.wikipedia.org/wiki/Abstract_syntax_tree>AST</a> objects and manipulating them until the resulting code is quite different indeed. Not everybody likes macros, and with good reason; but I think a testing framework like this is a great example of their utility. They allow us to bring to bear a specialized and significantly higher level of expressiveness. The drawback is that the &quot;rules&quot; no longer apply; if you weren't familiar with the unittest module, you might not understand how this code compiled at all. But writing tests, in my view, is a perfect example of a situation where the programmer benefits from the power of a DSL.[^pytest]</p> <p>[^pytest]: There is another well-established testing framework in Python: <a href=https://docs.pytest.org/en/latest/ >pytest</a>. Which, it should be noted, can do exactly what I've made a lot of noise about unittest not being able to do; it allows you to use normal <code>assert foo == bar</code> statements in your tests. In some ways, this is the exception that proves the rule when it comes to macros; the wizardry behind pytest's <a href=http://pybites.blogspot.com/2011/07/behind-scenes-of-pytests-new-assertion.html>assertion introspection</a> is heavy-duty enough that it might as well be a macro itself.</p> <h3>Checkpoint C</h3> <p>I feel that the story of testing in Nim is far from over. unittest is powerful and elegant, and admirably simple; the entire module is about 400 lines. But it's not as full-featured as frameworks that have been around in Python for much longer.</p> <p>There's also <a href=https://github.com/jyapayne/einheit>einheit</a>, which I have not tried but ironically was designed with the intention of drawing more inspiration from Python's unittest.</p> <p>There is nothing at all equivalent to <a href=http://hypothesis.works/ >Hypothesis</a>, the masterful property-based testing framework for Python. Hopefully some day we'll have a full-featured quickcheck analog at our disposal in Nim.</p> </div> <div class=col-md-3> <h3>Recent Posts</h3> <table class=recent-posts> <tr> <td style=white-space:nowrap>2022-02-19</td> <td><a href=../posts/a-specification-of-a-note-taking-program.html>A Specification of a Note-Taking Program</a></td> </tr> <tr> <td style=white-space:nowrap>2021-03-20</td> <td><a href=../posts/algorithms-im-proud-of-fill.html>Algorithms I'm Proud Of: Fill</a></td> </tr> <tr> <td style=white-space:nowrap>2020-12-10</td> <td><a href=../posts/bagatto-a-new-static-site-generator.html>Bagatto, a New Static Site Generator</a></td> </tr> <tr> <td style=white-space:nowrap>2020-11-22</td> <td><a href=../posts/a-regular-simplification-of-offenbacher-schrift.html>A Regular Simplification of Offenbacher Schrift</a></td> </tr> <tr> <td style=white-space:nowrap>2020-08-20</td> <td><a href=../posts/mariglia.html>Mariglia</a></td> </tr> </table> </div> </div> </div> </div> <hr> <div class=footer>Built with <a href=https://bagatto.co>Bagatto.</a></div> </div> </div> </div> </body> </html> 

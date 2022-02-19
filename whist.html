@@ -1,0 +1,2335 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bid Whist: An Implementation for Tamerlane</title>
+<script>
+!function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
+(function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
+b[0]==="^",c=["["];a&&c.push("^");for(var a=a?1:0,f=b.length;a<f;++a){var h=b[a];if(/\\[bdsw]/i.test(h))c.push(h);else{var h=d(h),l;a+2<f&&"-"===b[a+1]?(l=d(b[a+2]),a+=2):l=h;e.push([h,l]);l<65||h>122||(l<65||h>90||e.push([Math.max(65,h)|32,Math.min(l,90)|32]),l<97||h>122||e.push([Math.max(97,h)&-33,Math.min(l,122)&-33]))}}e.sort(function(e,a){return e[0]-a[0]||a[1]-e[1]});b=[];f=[];for(a=0;a<e.length;++a)h=e[a],h[0]<=f[1]+1?f[1]=Math.max(f[1],h[1]):b.push(f=h);for(a=0;a<b.length;++a)h=b[a],c.push(g(h[0])),
+h[1]>h[0]&&(h[1]+1>h[0]&&c.push("-"),c.push(g(h[1])));c.push("]");return c.join("")}function s(e){for(var a=e.source.match(/\[(?:[^\\\] ]|\\[\S\s])*]|\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\\d+|\\[^\dux]|\(\?[!:=]|[()^]|[^()[\\^]+/g),c=a.length,d=[],f=0,h=0;f<c;++f){var l=a[f];l==="("?++h:"\\"===l.charAt(0)&&(l=+l.substring(1))&&(l<=h?d[l]=-1:a[f]=g(l))}for(f=1;f<d.length;++f)-1===d[f]&&(d[f]=++x);for(h=f=0;f<c;++f)l=a[f],l==="("?(++h,d[h]||(a[f]="(?:")):"\\"===l.charAt(0)&&(l=+l.substring(1))&&l<=h&&
+(a[f]="\\"+d[l]);for(f=0;f<c;++f)"^"===a[f]&&"^"!==a[f+1]&&(a[f]="");if(e.ignoreCase&&m)for(f=0;f<c;++f)l=a[f],e=l.charAt(0),l.length>=2&&e==="["?a[f]=b(l):e!=="\\"&&(a[f]=l.replace(/[A-Za-z]/g,function(a){a=a.charCodeAt(0);return"["+String.fromCharCode(a&-33,a|32)+"]"}));return a.join("")}for(var x=0,m=!1,j=!1,k=0,c=a.length;k<c;++k){var i=a[k];if(i.ignoreCase)j=!0;else if(/[a-z]/i.test(i.source.replace(/\\u[\da-f]{4}|\\x[\da-f]{2}|\\[^UXux]/gi,""))){m=!0;j=!1;break}}for(var r={b:8,t:9,n:10,v:11,
+f:12,r:13},n=[],k=0,c=a.length;k<c;++k){i=a[k];if(i.global||i.multiline)throw Error(""+i);n.push("(?:"+s(i)+")")}return RegExp(n.join("|"),j?"gi":"g")}function S(a,d){function g(a){var c=a.nodeType;if(c==1){if(!b.test(a.className)){for(c=a.firstChild;c;c=c.nextSibling)g(c);c=a.nodeName.toLowerCase();if("br"===c||"li"===c)s[j]="\n",m[j<<1]=x++,m[j++<<1|1]=a}}else if(c==3||c==4)c=a.nodeValue,c.length&&(c=d?c.replace(/\r\n?/g,"\n"):c.replace(/[\t\n\r ]+/g," "),s[j]=c,m[j<<1]=x,x+=c.length,m[j++<<1|1]=
+a)}var b=/(?:^|\s)nocode(?:\s|$)/,s=[],x=0,m=[],j=0;g(a);return{a:s.join("").replace(/\n$/,""),d:m}}function H(a,d,g,b){d&&(a={a:d,e:a},g(a),b.push.apply(b,a.g))}function T(a){for(var d=void 0,g=a.firstChild;g;g=g.nextSibling)var b=g.nodeType,d=b===1?d?a:g:b===3?U.test(g.nodeValue)?a:d:d;return d===a?void 0:d}function D(a,d){function g(a){for(var j=a.e,k=[j,"pln"],c=0,i=a.a.match(s)||[],r={},n=0,e=i.length;n<e;++n){var z=i[n],w=r[z],t=void 0,f;if(typeof w==="string")f=!1;else{var h=b[z.charAt(0)];
+if(h)t=z.match(h[1]),w=h[0];else{for(f=0;f<x;++f)if(h=d[f],t=z.match(h[1])){w=h[0];break}t||(w="pln")}if((f=w.length>=5&&"lang-"===w.substring(0,5))&&!(t&&typeof t[1]==="string"))f=!1,w="src";f||(r[z]=w)}h=c;c+=z.length;if(f){f=t[1];var l=z.indexOf(f),B=l+f.length;t[2]&&(B=z.length-t[2].length,l=B-f.length);w=w.substring(5);H(j+h,z.substring(0,l),g,k);H(j+h+l,f,I(w,f),k);H(j+h+B,z.substring(B),g,k)}else k.push(j+h,w)}a.g=k}var b={},s;(function(){for(var g=a.concat(d),j=[],k={},c=0,i=g.length;c<i;++c){var r=
+g[c],n=r[3];if(n)for(var e=n.length;--e>=0;)b[n.charAt(e)]=r;r=r[1];n=""+r;k.hasOwnProperty(n)||(j.push(r),k[n]=q)}j.push(/[\S\s]/);s=R(j)})();var x=d.length;return g}function v(a){var d=[],g=[];a.tripleQuotedStrings?d.push(["str",/^(?:'''(?:[^'\\]|\\[\S\s]|''?(?=[^']))*(?:'''|$)|"""(?:[^"\\]|\\[\S\s]|""?(?=[^"]))*(?:"""|$)|'(?:[^'\\]|\\[\S\s])*(?:'|$)|"(?:[^"\\]|\\[\S\s])*(?:"|$))/,q,"'\""]):a.multiLineStrings?d.push(["str",/^(?:'(?:[^'\\]|\\[\S\s])*(?:'|$)|"(?:[^"\\]|\\[\S\s])*(?:"|$)|`(?:[^\\`]|\\[\S\s])*(?:`|$))/,
+q,"'\"`"]):d.push(["str",/^(?:'(?:[^\n\r'\\]|\\.)*(?:'|$)|"(?:[^\n\r"\\]|\\.)*(?:"|$))/,q,"\"'"]);a.verbatimStrings&&g.push(["str",/^@"(?:[^"]|"")*(?:"|$)/,q]);var b=a.hashComments;b&&(a.cStyleComments?(b>1?d.push(["com",/^#(?:##(?:[^#]|#(?!##))*(?:###|$)|.*)/,q,"#"]):d.push(["com",/^#(?:(?:define|e(?:l|nd)if|else|error|ifn?def|include|line|pragma|undef|warning)\b|[^\n\r]*)/,q,"#"]),g.push(["str",/^<(?:(?:(?:\.\.\/)*|\/?)(?:[\w-]+(?:\/[\w-]+)+)?[\w-]+\.h(?:h|pp|\+\+)?|[a-z]\w*)>/,q])):d.push(["com",
+/^#[^\n\r]*/,q,"#"]));a.cStyleComments&&(g.push(["com",/^\/\/[^\n\r]*/,q]),g.push(["com",/^\/\*[\S\s]*?(?:\*\/|$)/,q]));if(b=a.regexLiterals){var s=(b=b>1?"":"\n\r")?".":"[\\S\\s]";g.push(["lang-regex",RegExp("^(?:^^\\.?|[+-]|[!=]=?=?|\\#|%=?|&&?=?|\\(|\\*=?|[+\\-]=|->|\\/=?|::?|<<?=?|>>?>?=?|,|;|\\?|@|\\[|~|{|\\^\\^?=?|\\|\\|?=?|break|case|continue|delete|do|else|finally|instanceof|return|throw|try|typeof)\\s*("+("/(?=[^/*"+b+"])(?:[^/\\x5B\\x5C"+b+"]|\\x5C"+s+"|\\x5B(?:[^\\x5C\\x5D"+b+"]|\\x5C"+
+s+")*(?:\\x5D|$))+/")+")")])}(b=a.types)&&g.push(["typ",b]);b=(""+a.keywords).replace(/^ | $/g,"");b.length&&g.push(["kwd",RegExp("^(?:"+b.replace(/[\s,]+/g,"|")+")\\b"),q]);d.push(["pln",/^\s+/,q," \r\n\t\u00a0"]);b="^.[^\\s\\w.$@'\"`/\\\\]*";a.regexLiterals&&(b+="(?!s*/)");g.push(["lit",/^@[$_a-z][\w$@]*/i,q],["typ",/^(?:[@_]?[A-Z]+[a-z][\w$@]*|\w+_t\b)/,q],["pln",/^[$_a-z][\w$@]*/i,q],["lit",/^(?:0x[\da-f]+|(?:\d(?:_\d+)*\d*(?:\.\d*)?|\.\d\+)(?:e[+-]?\d+)?)[a-z]*/i,q,"0123456789"],["pln",/^\\[\S\s]?/,
+q],["pun",RegExp(b),q]);return D(d,g)}function J(a,d,g){function b(a){var c=a.nodeType;if(c==1&&!x.test(a.className))if("br"===a.nodeName)s(a),a.parentNode&&a.parentNode.removeChild(a);else for(a=a.firstChild;a;a=a.nextSibling)b(a);else if((c==3||c==4)&&g){var d=a.nodeValue,i=d.match(m);if(i)c=d.substring(0,i.index),a.nodeValue=c,(d=d.substring(i.index+i[0].length))&&a.parentNode.insertBefore(j.createTextNode(d),a.nextSibling),s(a),c||a.parentNode.removeChild(a)}}function s(a){function b(a,c){var d=
+c?a.cloneNode(!1):a,e=a.parentNode;if(e){var e=b(e,1),g=a.nextSibling;e.appendChild(d);for(var i=g;i;i=g)g=i.nextSibling,e.appendChild(i)}return d}for(;!a.nextSibling;)if(a=a.parentNode,!a)return;for(var a=b(a.nextSibling,0),d;(d=a.parentNode)&&d.nodeType===1;)a=d;c.push(a)}for(var x=/(?:^|\s)nocode(?:\s|$)/,m=/\r\n?|\n/,j=a.ownerDocument,k=j.createElement("li");a.firstChild;)k.appendChild(a.firstChild);for(var c=[k],i=0;i<c.length;++i)b(c[i]);d===(d|0)&&c[0].setAttribute("value",d);var r=j.createElement("ol");
+r.className="linenums";for(var d=Math.max(0,d-1|0)||0,i=0,n=c.length;i<n;++i)k=c[i],k.className="L"+(i+d)%10,k.firstChild||k.appendChild(j.createTextNode("\u00a0")),r.appendChild(k);a.appendChild(r)}function p(a,d){for(var g=d.length;--g>=0;){var b=d[g];F.hasOwnProperty(b)?E.console&&console.warn("cannot override language handler %s",b):F[b]=a}}function I(a,d){if(!a||!F.hasOwnProperty(a))a=/^\s*</.test(d)?"default-markup":"default-code";return F[a]}function K(a){var d=a.h;try{var g=S(a.c,a.i),b=g.a;
+a.a=b;a.d=g.d;a.e=0;I(d,b)(a);var s=/\bMSIE\s(\d+)/.exec(navigator.userAgent),s=s&&+s[1]<=8,d=/\n/g,x=a.a,m=x.length,g=0,j=a.d,k=j.length,b=0,c=a.g,i=c.length,r=0;c[i]=m;var n,e;for(e=n=0;e<i;)c[e]!==c[e+2]?(c[n++]=c[e++],c[n++]=c[e++]):e+=2;i=n;for(e=n=0;e<i;){for(var p=c[e],w=c[e+1],t=e+2;t+2<=i&&c[t+1]===w;)t+=2;c[n++]=p;c[n++]=w;e=t}c.length=n;var f=a.c,h;if(f)h=f.style.display,f.style.display="none";try{for(;b<k;){var l=j[b+2]||m,B=c[r+2]||m,t=Math.min(l,B),A=j[b+1],G;if(A.nodeType!==1&&(G=x.substring(g,
+t))){s&&(G=G.replace(d,"\r"));A.nodeValue=G;var L=A.ownerDocument,o=L.createElement("span");o.className=c[r+1];var v=A.parentNode;v.replaceChild(o,A);o.appendChild(A);g<l&&(j[b+1]=A=L.createTextNode(x.substring(t,l)),v.insertBefore(A,o.nextSibling))}g=t;g>=l&&(b+=2);g>=B&&(r+=2)}}finally{if(f)f.style.display=h}}catch(u){E.console&&console.log(u&&u.stack||u)}}var E=window,y=["break,continue,do,else,for,if,return,while"],C=[[y,"auto,case,char,const,default,double,enum,extern,float,goto,inline,int,long,register,short,signed,sizeof,static,struct,switch,typedef,union,unsigned,void,volatile"],
+"catch,class,delete,false,import,new,operator,private,protected,public,this,throw,true,try,typeof"],M=[C,"alignof,align_union,asm,axiom,bool,concept,concept_map,const_cast,constexpr,decltype,delegate,dynamic_cast,explicit,export,friend,generic,late_check,mutable,namespace,nullptr,property,reinterpret_cast,static_assert,static_cast,template,typeid,typename,using,virtual,where"],V=[C,"abstract,assert,boolean,byte,extends,final,finally,implements,import,instanceof,interface,null,native,package,strictfp,super,synchronized,throws,transient"],
+N=[C,"abstract,as,base,bool,by,byte,checked,decimal,delegate,descending,dynamic,event,finally,fixed,foreach,from,group,implicit,in,interface,internal,into,is,let,lock,null,object,out,override,orderby,params,partial,readonly,ref,sbyte,sealed,stackalloc,string,select,uint,ulong,unchecked,unsafe,ushort,var,virtual,where"],C=[C,"debugger,eval,export,function,get,null,set,undefined,var,with,Infinity,NaN"],O=[y,"and,as,assert,class,def,del,elif,except,exec,finally,from,global,import,in,is,lambda,nonlocal,not,or,pass,print,raise,try,with,yield,False,True,None"],
+P=[y,"alias,and,begin,case,class,def,defined,elsif,end,ensure,false,in,module,next,nil,not,or,redo,rescue,retry,self,super,then,true,undef,unless,until,when,yield,BEGIN,END"],W=[y,"as,assert,const,copy,drop,enum,extern,fail,false,fn,impl,let,log,loop,match,mod,move,mut,priv,pub,pure,ref,self,static,struct,true,trait,type,unsafe,use"],y=[y,"case,done,elif,esac,eval,fi,function,in,local,set,then,until"],Q=/^(DIR|FILE|vector|(de|priority_)?queue|list|stack|(const_)?iterator|(multi)?(set|map)|bitset|u?(int|float)\d*)\b/,
+U=/\S/,X=v({keywords:[M,N,C,"caller,delete,die,do,dump,elsif,eval,exit,foreach,for,goto,if,import,last,local,my,next,no,our,print,package,redo,require,sub,undef,unless,until,use,wantarray,while,BEGIN,END",O,P,y],hashComments:!0,cStyleComments:!0,multiLineStrings:!0,regexLiterals:!0}),F={};p(X,["default-code"]);p(D([],[["pln",/^[^<?]+/],["dec",/^<!\w[^>]*(?:>|$)/],["com",/^<\!--[\S\s]*?(?:--\>|$)/],["lang-",/^<\?([\S\s]+?)(?:\?>|$)/],["lang-",/^<%([\S\s]+?)(?:%>|$)/],["pun",/^(?:<[%?]|[%?]>)/],["lang-",
+/^<xmp\b[^>]*>([\S\s]+?)<\/xmp\b[^>]*>/i],["lang-js",/^<script\b[^>]*>([\S\s]*?)(<\/script\b[^>]*>)/i],["lang-css",/^<style\b[^>]*>([\S\s]*?)(<\/style\b[^>]*>)/i],["lang-in.tag",/^(<\/?[a-z][^<>]*>)/i] ]),["default-markup","htm","html","mxml","xhtml","xml","xsl"]);p(D([["pln",/^\s+/,q," \t\r\n"],["atv",/^(?:"[^"]*"?|'[^']*'?)/,q,"\"'"] ],[["tag",/^^<\/?[a-z](?:[\w-.:]*\w)?|\/?>$/i],["atn",/^(?!style[\s=]|on)[a-z](?:[\w:-]*\w)?/i],["lang-uq.val",/^=\s*([^\s"'>]*(?:[^\s"'/>]|\/(?=\s)))/],["pun",/^[/<->]+/],
+["lang-js",/^on\w+\s*=\s*"([^"]+)"/i],["lang-js",/^on\w+\s*=\s*'([^']+)'/i],["lang-js",/^on\w+\s*=\s*([^\s"'>]+)/i],["lang-css",/^style\s*=\s*"([^"]+)"/i],["lang-css",/^style\s*=\s*'([^']+)'/i],["lang-css",/^style\s*=\s*([^\s"'>]+)/i] ]),["in.tag"]);p(D([],[["atv",/^[\S\s]+/] ]),["uq.val"]);p(v({keywords:M,hashComments:!0,cStyleComments:!0,types:Q}),["c","cc","cpp","cxx","cyc","m"]);p(v({keywords:"null,true,false"}),["json"]);p(v({keywords:N,hashComments:!0,cStyleComments:!0,verbatimStrings:!0,types:Q}),
+["cs"]);p(v({keywords:V,cStyleComments:!0}),["java"]);p(v({keywords:y,hashComments:!0,multiLineStrings:!0}),["bash","bsh","csh","sh"]);p(v({keywords:O,hashComments:!0,multiLineStrings:!0,tripleQuotedStrings:!0}),["cv","py","python"]);p(v({keywords:"caller,delete,die,do,dump,elsif,eval,exit,foreach,for,goto,if,import,last,local,my,next,no,our,print,package,redo,require,sub,undef,unless,until,use,wantarray,while,BEGIN,END",hashComments:!0,multiLineStrings:!0,regexLiterals:2}),["perl","pl","pm"]);p(v({keywords:P,
+hashComments:!0,multiLineStrings:!0,regexLiterals:!0}),["rb","ruby"]);p(v({keywords:C,cStyleComments:!0,regexLiterals:!0}),["javascript","js"]);p(v({keywords:"all,and,by,catch,class,else,extends,false,finally,for,if,in,is,isnt,loop,new,no,not,null,of,off,on,or,return,super,then,throw,true,try,unless,until,when,while,yes",hashComments:3,cStyleComments:!0,multilineStrings:!0,tripleQuotedStrings:!0,regexLiterals:!0}),["coffee"]);p(v({keywords:W,cStyleComments:!0,multilineStrings:!0}),["rc","rs","rust"]);
+p(D([],[["str",/^[\S\s]+/] ]),["regex"]);var Y=E.PR={createSimpleLexer:D,registerLangHandler:p,sourceDecorator:v,PR_ATTRIB_NAME:"atn",PR_ATTRIB_VALUE:"atv",PR_COMMENT:"com",PR_DECLARATION:"dec",PR_KEYWORD:"kwd",PR_LITERAL:"lit",PR_NOCODE:"nocode",PR_PLAIN:"pln",PR_PUNCTUATION:"pun",PR_SOURCE:"src",PR_STRING:"str",PR_TAG:"tag",PR_TYPE:"typ",prettyPrintOne:E.prettyPrintOne=function(a,d,g){var b=document.createElement("div");b.innerHTML="<pre>"+a+"</pre>";b=b.firstChild;g&&J(b,g,!0);K({h:d,j:g,c:b,i:1});
+return b.innerHTML},prettyPrint:E.prettyPrint=function(a,d){function g(){for(var b=E.PR_SHOULD_USE_CONTINUATION?c.now()+250:Infinity;i<p.length&&c.now()<b;i++){for(var d=p[i],j=h,k=d;k=k.previousSibling;){var m=k.nodeType,o=(m===7||m===8)&&k.nodeValue;if(o?!/^\??prettify\b/.test(o):m!==3||/\S/.test(k.nodeValue))break;if(o){j={};o.replace(/\b(\w+)=([\w%+\-.:]+)/g,function(a,b,c){j[b]=c});break}}k=d.className;if((j!==h||e.test(k))&&!v.test(k)){m=!1;for(o=d.parentNode;o;o=o.parentNode)if(f.test(o.tagName)&&
+o.className&&e.test(o.className)){m=!0;break}if(!m){d.className+=" prettyprinted";m=j.lang;if(!m){var m=k.match(n),y;if(!m&&(y=T(d))&&t.test(y.tagName))m=y.className.match(n);m&&(m=m[1])}if(w.test(d.tagName))o=1;else var o=d.currentStyle,u=s.defaultView,o=(o=o?o.whiteSpace:u&&u.getComputedStyle?u.getComputedStyle(d,q).getPropertyValue("white-space"):0)&&"pre"===o.substring(0,3);u=j.linenums;if(!(u=u==="true"||+u))u=(u=k.match(/\blinenums\b(?::(\d+))?/))?u[1]&&u[1].length?+u[1]:!0:!1;u&&J(d,u,o);r=
+{h:m,c:d,j:u,i:o};K(r)}}}i<p.length?setTimeout(g,250):"function"===typeof a&&a()}for(var b=d||document.body,s=b.ownerDocument||document,b=[b.getElementsByTagName("pre"),b.getElementsByTagName("code"),b.getElementsByTagName("xmp")],p=[],m=0;m<b.length;++m)for(var j=0,k=b[m].length;j<k;++j)p.push(b[m][j]);var b=q,c=Date;c.now||(c={now:function(){return+new Date}});var i=0,r,n=/\blang(?:uage)?-([\w.]+)(?!\S)/,e=/\bprettyprint\b/,v=/\bprettyprinted\b/,w=/pre|xmp/i,t=/^code$/i,f=/^(?:pre|code|xmp)$/i,
+h={};g()}};typeof define==="function"&&define.amd&&define("google-code-prettify",[],function(){return Y})})();}()
+</script>
+<style>
+/*! Color themes for Google Code Prettify | MIT License | github.com/jmblog/color-themes-for-google-code-prettify */
+
+.prettyprint{background:#fefbec;font-family:Menlo,Bitstream Vera Sans Mono,DejaVu Sans Mono,Monaco,Consolas,monospace;border:0!important}.pln{color:#20201d}ol.linenums{margin-top:0;margin-bottom:0;color:#999580}li.L0,li.L1,li.L2,li.L3,li.L4,li.L5,li.L6,li.L7,li.L8,li.L9{padding-left:1em;background-color:#fefbec;list-style-type:decimal}@media screen{.str{color:#60ac39}.kwd{color:#b854d4}.com{color:#999580}.typ{color:#6684e1}.lit{color:#b65611}.pun{color:#20201d}.opn{color:#20201d}.clo{color:#20201d}.tag{color:#d73737}.atn{color:#b65611}.atv{color:#1fad83}.dec{color:#b65611}.var{color:#d73737}.fun{color:#6684e1}}
+body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{font-size: 10pt;}a:link,a:visited{color:#00f}.codeblock_name,code,pre.prettyprint{font-family:Monaco,"Lucida Console",monospace}body{font-size:14pt}.codeblock_name,.math,.seealso,code{font-size:10pt}.codeblock{page-break-inside:avoid;padding-bottom:15px}.math{text-indent:0}pre.prettyprint{font-size:10pt;padding:10px;border-radius:10px;border:none;white-space:pre-wrap}.codeblock_name{margin-top:1.25em;display:block}a:link{text-decoration:none}a:link:not(.lit):hover{color:#00f;text-decoration:underline}a:link:active{color:red}h4{padding-right:1.25em}h4.noheading{margin-bottom:0}h1{text-align:center}code{padding:2px}pre{-moz-tab-size:4;-o-tab-size:4;tab-size:4}p:not(.notp){margin:0;text-indent:2em}.two-col{list-style-type:none}.two-col li:before{content:'-';padding:5px;margin-right:5px;color:orange;background-color:#fff;display:inline-block}@media print{body{font-size:10pt}pre.prettyprint{font-size:8pt}.seealso{font-size:9pt}.codeblock_name,.math,code{font-size:8pt}.math{text-indent:0}}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap');
+
+p:not(.notp) {
+    margin-bottom: 1em;
+    text-indent: 0;
+}
+body {
+    font-family: 'IBM Plex Serif', serif;
+    padding-top: 20px;
+    padding-bottom: 60px;
+    font-size: 16px;
+    color: #222;
+    background-color: #FFFFFD;
+}
+
+.hljs {
+    background-color: #FFFFEA !important;
+}
+
+a {
+    color: black;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #bffff;
+}
+
+pre {
+    background-color: #FFFFEA;
+    border: none;
+}
+
+h1 {
+    font-family: 'Old Standard TT', serif;
+}
+
+h2 {
+    font-family: 'Old Standard TT', serif;
+    font-size: 26px;
+}
+
+h3 {
+    font-family: 'Old Standard TT', serif;
+}
+
+h4 {
+    font-family: 'Old Standard TT', serif;
+}
+
+code {
+    font-family: "Iosevka", monospace;
+    color: black;
+    background-color: #FFFFEA;
+}
+
+blockquote {
+    font-style: italic;
+    font-size: 16px;
+    color: #333;
+    background-color: #FFFFEA;
+    border: none;
+}
+
+figure {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+figcaption {
+    font-size: 12px;
+}
+
+.container .jumbotron {
+}
+
+.jumbotron {
+    margin: 0 0 40px;
+    padding: 20px 10px 30px;
+    text-align: center;
+    background-color: #FFFFFD;
+}
+
+.jumbotron h1 {
+    font-size: 52px;
+    line-height: 1;
+}
+.jumbotron .lead {
+    font-size: 24px;
+    line-height: 1.25;
+}
+.jumbotron .btn {
+    font-size: 21px;
+    padding: 14px 24px;
+}
+.jumbotron p {
+    font-family: "Iosevka", monospace;
+}
+.marketing {
+    margin: 60px 0;
+}
+.marketing p + h4 {
+    margin-top: 28px;
+}
+
+.navbar .navbar-inner {
+    padding: 0;
+}
+.navbar .nav {
+    margin: 0;
+    display: table;
+    width: 1%;
+}
+.navbar .nav li {
+    display: table-cell;
+    width: 1%;
+    float: none;
+}
+.navbar .nav li a {
+    font-family: 'Old Standard TT', serif;
+    font-weight: bold;
+    text-align: center;
+    border-left: 1px solid rgba(255,255,255,.75);
+    border-right: 1px solid rgba(0,0,0,.1);
+}
+
+.navbar .nav li a:hover {
+    background-color: #FFFFFD;
+}
+
+.navbar .nav li:first-child a {
+    border-left: 0;
+    border-radius: 0 0 0 0;
+}
+.navbar .nav li:last-child a {
+    border-right: 0;
+    border-radius: 0 0 0 0;
+}
+
+.body {
+    padding: 0 10px;
+}
+
+.recent-posts tr {
+    vertical-align: top;
+}
+
+.recent-posts td {
+    padding-right: 10px;
+    padding-bottom: 5px;
+    border-style: hidden;
+}
+
+.post-info {
+    font-style: italic;
+}
+
+table {
+    margin: auto;
+    margin-bottom: 15px;
+    font-family: "Iosevka", monospace;
+}
+
+th {
+    text-align: center;
+    padding-right: 10px;
+}
+
+td {
+    border-width: 1px;
+    border-style: solid;
+    padding: 5px;
+    text-align: right;
+    background-color: #FFFFEA;
+}
+
+.footnote {
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em;
+  font-size: 80%;
+}
+
+sup {
+  vertical-align: super;
+  font-size: smaller;
+}
+
+.oneline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.oneline br {
+  display: none;
+}
+.oneline p {
+  display: inline;
+}
+</style>
+</head>
+<body onload="prettyPrint()">
+<section>
+<h1>Bid Whist: An Implementation for Tamerlane</h1>
+<a name="1:1"><div class="section"><h4>1. Introduction</h4></a>
+<p>This program implements a <strong>rules engine</strong> for Tamerlane, the card
+game server. It provides a working version of the game Bid Whist, as
+well as an example implementation of a realistically complex rules
+engine.
+</p>
+
+</div>
+<a name="1:2"><div class="section"><h4>2. About This Document</h4></a>
+<p>This is a <strong>literate program</strong> which describes the full implementation
+of a rules engine for Tamerlane. In it is contained all the source
+code required to compile and run a web server which implements
+Tamerlane's API contract.
+</p>
+<p>This code is written using the <a href="http://literate.zbyedidia.webfactional.com/">Literate</a> program, which takes a
+literate source document and renders the document you are reading, as
+well as the source files needed to compile the program. The source
+files are available at <a href="https://git.sr.ht/~subsetpark/whist">sourcehut</a>.
+</p>
+<p>The language that I've implemented this software in is <a href="https://janet-lang.org/">Janet</a>,
+a lightweight lisp. To thoroughly understand the implementation it
+might be good to know Janet, or at least a language like Clojure or
+Scheme. To be able to follow along and understand what you need to
+implement in order to write your <em>own</em> rules engine (which is the
+purpose of this document), you don't need to know Janet. You just need
+to understand some basic Lisp control forms like <code>let</code> and <code>defn</code>, and
+to understand how to read an s-expression.
+</p>
+<p>You should be able to read this document front-to-back, like a
+book. I've tried to focus on the concepts that are central to the
+function of the Tamerlane rules engine concept. Therefore, the bulk of
+this document is concerned with writing the business logic that
+defines the rules to the game Bid Whist. Also important is
+understanding the specifics of the endpoints and HTTP methods that are
+expected by Tamerlane.
+</p>
+<p>Other implementation details are handled in appendices at the end of
+the document. I've tried to make the code as readable and effective as
+possible, but it should be less crucial to this document's purpose as
+a guide for writing a games engine for Tamerlane.
+</p>
+
+</div>
+<a name="1:3"><div class="section"><h4>3. Bid Whist</h4></a>
+<p>The game of Bid Whist is, as its name suggests, a descendent of the
+old English game of Whist, and a cousin of the game Bridge.
+</p>
+<p>A full copy of the rules are available at
+<a href="https://www.pagat.com/auctionwhist/bidwhist.html">Pagat</a>. I've tried
+to reproduce them faithfully and completely; one notable exception is
+that I've opted to allow the auction to go around until all players
+have passed instead of having it go exactly once around the table.
+</p>
+<h2> The Tamerlane Arhitecture</h2>
+
+</div>
+<a name="1:4"><div class="section"><h4>4. Rules Engine Architecture</h4></a>
+<p>Here's a simplified sequence diagram illustrating how a player
+interacts with the Tamerlane server and a Tamerlane rules
+engine. Simply put, the server will initialize a game based on the
+results of an initial state call to the rules engine, and thereafter
+it will loop on getting player input, using that input to calculate
+the next game state, and exposing player prompts based on that state.
+</p>
+<p>The rules of the game, therefore, are realized in the <strong>next state</strong> step.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Sequence Diagram <a href="whist.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-janet">
++---------+             +---------+              +-------------+
+| Player  |             | Server  |              | RulesEngine |
++---------+             +---------+              +-------------+
+     |                       |                          |
+     | start game            |                          |
+     |----------------------&gt;|                          |
+     |                       |                          |
+     |                       | get initial state        |
+     |                       |-------------------------&gt;|
+     |                       |                          |
+     | player action         |                          |
+     |----------------------&gt;|                          |
+     |                       |                          |
+     |                       | current state            |
+     |                       |-------------------------&gt;|
+     |                       |                          | ----------------------\
+     |                       |                          |-| (whist/next params) |
+     |                       |                          | |---------------------|
+     |                       |                          |
+     |                       |               next state |
+     |                       |&lt;-------------------------|
+     |                       |                          |
+     |      prompt for input |                          |
+     |&lt;----------------------|                          |
+     |                       |                          |
+</pre>
+
+
+
+</div>
+<h2> Game Logic</h2>
+
+</div>
+<a name="1:5"><div class="section"><h4>5. whist/next</h4></a>
+<p>The most important function that we need to implement when building a
+rules engine is <code>next</code>. Ultimately, we'll expose an API endpoint that
+accepts a POST request and passes the body to <code>next</code>. The input to our
+function describes the state of the entire session, and the return
+value of this function will be to describe <em>what happens next.</em>
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{`next` Function Signature <a href="whist.html#1:5">5</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn next
+  ```
+  Rules engine for Bid Whist.
+  ```
+  [{:state state
+    :players players
+    :action action}]
+<span class="nocode pln">  {Return Next State, <a href="whist.html#1:7">7</a>}</span>
+)
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:8">8</a></p>
+</div>
+<p>The three components of the input are the <code>state</code>, the <code>players</code>, and
+an <code>action</code>.
+</p>
+<p>Every <em>next state</em> describes a change after some single action. 
+</p>
+
+</div>
+<a name="1:6"><div class="section"><h4>6. State</h4></a>
+<p>The <code>state</code> consists of the state of the game. This includes things
+like the cards on the table and the scores for the players, but it
+also will include arbitrary metadata that we read and write.
+</p>
+<p>The <code>players</code> are a list of the players, their metadata, and their
+current hands.
+</p>
+
+</div>
+<a name="1:7"><div class="section"><h4 class="noheading">7. </h4></a>
+<p>The most basic and important attribute of the game state is the
+<code>phase</code>. You can populate this however you like, though it must be
+present.
+</p>
+<p>Here we'll match on the game phase to call one of the five main game
+modules. Each one has the same return signature.
+</p>
+<p>As we shall see, the return value of <code>next</code> is always a list with two
+elements:
+</p>
+<ol>
+<li>The new game state;
+</li>
+<li>A list of <em>events</em> to be evaluated by the server within the game.
+</li>
+</ol>
+
+<div class="codeblock">
+<span class="codeblock_name">{Return Next State <a href="whist.html#1:7">7</a>}</span>
+<pre class="prettyprint lang-janet">
+(match (state :phase)
+  "deal" (deal/evaluate-phase state players)
+  "bid" (bid/evaluate-phase state players action)
+  "discard" (discard/evaluate-phase state players action)
+  "begin_play" (beginplay/evaluate-phase state players action)
+  "play" (play/evaluate-phase state players action))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:5">5</a></p>
+</div>
+</div>
+<a name="1:8"><div class="section"><h4 class="noheading">8. </h4></a>
+<p>We've broken up our Bid Whist game by those phases. Each phase has a
+single module which exposes a single <code>evaluate-phase</code> function. Our main
+<code>whist</code> module simply looks at the phase of the incoming game state
+and delegates to the appropriate module.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>whist.janet</strong> <a href="whist.html#1:8">8</a>}</span>
+<pre class="prettyprint lang-janet">
+(import game/deal)
+(import game/bid)
+(import game/discard)
+(import game/beginplay)
+(import game/play)
+
+<span class="nocode pln">{`next` Function Signature, <a href="whist.html#1:5">5</a>}</span>
+</pre>
+
+
+
+</div>
+<p>We'll start with the deal. We see that we only need the game state and
+the players, as it's the first thing that happens in the game.
+</p>
+
+</div>
+<a name="1:9"><div class="section"><h4>9. The Deal</h4></a>
+<p>There's very little logic in the deal, so it's a good place to
+start. We simply pull out the first player and then return.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Main Deal Function <a href="whist.html#1:9">9</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn evaluate-phase
+  ```
+  Each player starts with 12 cards. 
+
+  The first player is prompted to begin bidding.
+  ```
+  [state players]
+<span class="nocode pln">  {Get The First Player, <a href="whist.html#1:10">10</a>}</span>
+<span class="nocode pln">  {Return Value, <a href="whist.html#1:11">11</a>}</span>
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:17">17</a></p>
+</div>
+</div>
+<a name="1:10"><div class="section"><h4 class="noheading">10. </h4></a>
+<p><code>players</code> is a list of objects representing each player. <code>(player :id)</code>
+is a string that's guaranteed to be unique among the players. Here
+we'll simply grab the first player's id.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Get The First Player <a href="whist.html#1:10">10</a>}</span>
+<pre class="prettyprint lang-janet">
+(let [bidder ((in players 0) :id)]
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:9">9</a></p>
+</div>
+</div>
+<a name="1:11"><div class="section"><h4>11. Return: the New State and a List of Events</h4></a>
+<p>Finally we see the return value of our functions.
+</p>
+<p>We simply return a tuple of two elements. The first is the new game
+state; the second is an array of <strong>events</strong> to be emitted.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Return Value <a href="whist.html#1:11">11</a>}</span>
+<pre class="prettyprint lang-janet">
+[
+<span class="nocode pln"> {New State, <a href="whist.html#1:12">12</a>}</span>
+<span class="nocode pln"> {Deal Events, <a href="whist.html#1:13">13</a>}</span>
+]))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:9">9</a></p>
+</div>
+</div>
+<a name="1:12"><div class="section"><h4 class="noheading">12. </h4></a>
+<p>First the state.
+</p>
+<p>We begin by merging some values into the state we were passed in. In
+general this is good practice, because whatever we return will become
+the new state. So if we clobber something useful, it be lost.
+</p>
+<p>The new state we're merging in has two attributes: <code>phase</code>, which
+we've already covered, and <code>meta</code>. In fact, <code>meta</code> has no semantics to
+the Tamerlane system. We'll be using it for our own purposes. The game
+won't display it; it will simply include it in the next game state it
+sends over. Thus, it's an easy way for us to keep track of any game
+variables we like.
+</p>
+<p>In this case, we'll need to keep track of two variables: <code>high_bid</code>,
+which is empty for now; and <code>not_passed</code>, which is a set containing
+all the players. We'll use them both in the bidding phase.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{New State <a href="whist.html#1:12">12</a>}</span>
+<pre class="prettyprint lang-janet">
+# State: Deal -&gt; Bid 
+(merge state {:phase "bid"
+              :meta (new-meta players)})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:11">11</a></p>
+</div>
+
+<div class="codeblock">
+<span class="codeblock_name">{Initialize Metadata <a href="whist.html#1:12">12</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- new-meta [players] {:high_bid {}
+                           :not_passed (zipcoll (map |($0 :id) players) [true true true true])})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:17">17</a></p>
+</div>
+</div>
+<a name="1:13"><div class="section"><h4 class="noheading">13. </h4></a>
+<p>Next are the events.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Deal Events <a href="whist.html#1:13">13</a>}</span>
+<pre class="prettyprint lang-janet">
+(array/concat
+ (all-draw players)
+ (events/add-decoration bidder "bid_action" "bidding")
+  (events/pick1 "bid" bidder (bids/available-bids)))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:11">11</a></p>
+</div>
+</div>
+<a name="1:14"><div class="section"><h4>14. Draw</h4></a>
+<p>Each element in the events array is, fittingly, a call to the <code>events</code>
+module. There are three types of event. First, the <code>draw</code> event:
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Each Player Draws <a href="whist.html#1:14">14</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- all-draw [players] (map |(events/draw ($0 :id) 12) players))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:17">17</a></p>
+</div>
+
+<div class="codeblock">
+<span class="codeblock_name">{Events: Draw <a href="whist.html#1:14">14</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn draw [player count] {:event "draw" :player player :count count})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:68">68</a></p>
+</div>
+<p><code>all-draw</code> emits one event for each player. We end up with four
+structs corresponding to the four players.
+</p>
+<p>As we will see, every event has an <code>event</code> attribute, which identifies
+a specific side effect understood by the Tamerlane server. Every type
+of event has its own set of attributes. Together they constitute the Tamerlane API.
+</p>
+<p>The <code>draw</code> event tells the server to draw a certain number of cards
+into the specified player's hand.
+</p>
+<p>Notice that the hands are not part of the state, and we haven't seen
+the deck anywhere either; these are controlled by the server. When the
+server processes one of these events, it will remove the first 12
+cards from the deck and append them to the hand of the specified
+player.
+</p>
+
+</div>
+<a name="1:15"><div class="section"><h4>15. Add Decoration</h4></a>
+<p>The next type of event is <code>add-decoration</code>.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Events: Add Decoration <a href="whist.html#1:15">15</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn add-decoration [player name value] {:event "add_decoration" :name name :player player :value value})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:68">68</a></p>
+</div>
+<p><strong>decoration</strong> is a generic way of displaying information associated
+with a player. In this case we set the <code>bid_action</code> decoration for
+the first player to <code>bidding</code>. The name, <code>bid_action</code>, is for our use
+only; the server will display <code>bidding</code> next to the icon for that
+player.
+</p>
+
+</div>
+<a name="1:16"><div class="section"><h4>16. Pick 1</h4></a>
+<p>Finally, we include a <strong>prompt</strong>.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Events: Pick 1 <a href="whist.html#1:16">16</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn pick1 [name player choices] {:event "prompt_select" :name name :player player :count 1 :from choices})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:68">68</a></p>
+</div>
+<p>Most state changes (except for the first, as we've seen!) are in
+response to <strong>actions</strong>. And all actions are in response to
+prompts. This is the first kind of prompt we've seen: a <strong>select
+prompt</strong>, where the player is presented with a simple list of choices
+and they have to choose one.
+</p>
+<p>When they do that, the game server will make a <code>next</code> call to our
+rules server, and the value of their selection will be the <code>action</code>.
+</p>
+<p>In this case, the choices are a list of possible bids. Thus the bid phase begins.
+</p>
+
+</div>
+<a name="1:17"><div class="section"><h4>17. deal.janet</h4></a>
+<p>We've now performed everything we need to complete the deal: we've set
+up our state, populated the players' hands, set a player decoration,
+and prompted for the first player action.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>game/deal.janet</strong> <a href="whist.html#1:17">17</a>}</span>
+<pre class="prettyprint lang-janet">
+(import events)
+(import bids)
+
+<span class="nocode pln">{Each Player Draws, <a href="whist.html#1:14">14</a>}</span>
+<span class="nocode pln">{Initialize Metadata, <a href="whist.html#1:12">12</a>}</span>
+<span class="nocode pln">{Main Deal Function, <a href="whist.html#1:9">9</a>}</span>
+</pre>
+
+
+
+</div>
+</div>
+<a name="1:18"><div class="section"><h4>18. The Auction</h4></a>
+<p>The "Bid" in "Bid Whist" is an auction for the right to <em>name
+trumps</em>. The players, starting to the left of the dealer, take turns
+bidding on which team will undertake a contract to win the highest
+number of tricks. Whichever player wins the auction becomes the
+<em>declarer</em> and announces what the trump suit will be.
+</p>
+<p>Our bid function is structured quite similarly to the deal
+function. One important difference, however, is that now we actually
+handle <code>action</code>. Referring to <code>{whist.janet,</code><a href="whist.html#1:8"><code>8</code></a><code>}</code>, we always pattern match
+on <code>action</code> in the incoming request body; however, it doesn't matter
+in the deal. Intuitively, this makes sense; the deal is the first
+thing that happens and there's no player input necessary to evaluate it.
+</p>
+<p>The auction, and the rest of the game to boot, are different. In
+<code>{Deal Events,</code><a href="whist.html#1:13"><code>13</code></a><code>}</code> we prompted the first player for their opening bid;
+therefore, we expect that this incoming bid action is the next input
+that the server will receive.
+</p>
+<p><strong>[NOTE]</strong>: Of course, in production, we should expect that we will
+be receiving many requests from different ongoing games at
+once. That doesn't pose any difficulty as our game rules server is
+stateless. Every request will contain everything needed to evaluate
+the next state of the game. 
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Main Bid Function <a href="whist.html#1:18">18</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn evaluate-phase
+  ```
+  The players bid in an auction to name trump. 
+
+  The highest bid is a number of tricks to take above six with a named
+  suit or no-trumps.
+  
+  Requires:
+  - `high_bid`
+  - `not_passed`: The players that haven't yet passed.
+  ```
+  [state players action]
+  (if (= action :null) (error {:error "action required"}))
+<span class="nocode pln">  {Handle the Bid Action, <a href="whist.html#1:19">19</a>}</span>
+)
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:26">26</a></p>
+</div>
+</div>
+<a name="1:19"><div class="section"><h4 class="noheading">19. </h4></a>
+<p>The first thing we do is check for the existence of the action
+input. Generally speaking, Tamerlane is designed not to require too
+much error handling and input validation from rules engines; it should
+generally try to Do The Right Thing. That said, it might help with
+development to add some basic error and input validation.
+</p>
+<p>In the bidding phase, as in most other complex game phases that we
+might want to represent, we need to be able to handle any input and
+determine whether the phase is over, or whether it should continue by
+returning a state with the same <code>phase</code> attribute.
+</p>
+<p>In this case, we can reason that two things need to be true for the
+auction to be over:
+</p>
+<ol>
+<li>There is some high bidder;
+</li>
+<li>Everyone else has passed.
+</li>
+</ol>
+<p><strong>[NOTE]</strong>: In a system where we were responsible for the error
+handling and validation, we might want to validate that the high
+bidder and the one person left in the set of not-passed players are
+<em>the same player</em>. In this system, that constraint would only be
+violated if the Tamerlane input system had a bug in it, and that's not
+our responsibility.
+</p>
+<p>This gives us the basic structure of the bid phase. We will determine
+if we've reached that condition, and if so, end the auction. Otherwise
+we'll continue.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Handle the Bid Action <a href="whist.html#1:19">19</a>}</span>
+<pre class="prettyprint lang-janet">
+(let [new-meta (new-meta state action)
+      {:high_bid {:player high-bidder :bid high-bid}} new-meta
+      events (initial-events state action high-bid)
+      not-passed (update-not-passed state action)]
+  # The set of players still in the auction is now up to date. We'll
+  # use it to determine whether the action is over.
+  (if (and (not (nil? high-bidder)) (= 1 (length not-passed)))
+    # If someone has bid and all but one have passed, the auction is over.
+<span class="nocode pln">    {End the Auction, <a href="whist.html#1:25">25</a>}</span>
+    # Otherwise, continue the bidding.
+<span class="nocode pln">    {Continue the Auction, <a href="whist.html#1:24">24</a>}</span>
+))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:18">18</a></p>
+</div>
+</div>
+<a name="1:20"><div class="section"><h4>20. Bidding: New Meta</h4></a>
+<p>The <code>new-meta</code> function takes the existing state and the action and
+computes the new metadata entry from it.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{New Meta <a href="whist.html#1:20">20</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- new-meta
+  [{:meta meta} {:value last-bid :player last-bidder}]
+  (let [{:bid previous-high-bid :player previous-high-bidder} (meta :high_bid)
+        # Record the high bid (whether it's a new bid or the existing high bid).
+        [high-bid high-bidder] (case last-bid
+                                 "pass" [previous-high-bid previous-high-bidder]
+                                 [last-bid last-bidder])]
+    @{:high_bid @{:player high-bidder :bid high-bid}}))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:26">26</a></p>
+</div>
+<p>Conceptually, it's pretty straightforward: we assume the presence of a
+<code>high_bid</code> attribute in the input state metadata. If the input action
+was a pass, the new high bid is the same as the old high
+bid. Otherwise, the new bid is the new high bid. If we had to actually
+validate that the input <em>was</em> higher, this function would be a little
+more complex, but we can assume that no illegal inputs were allowed by
+the server.
+</p>
+
+</div>
+<a name="1:21"><div class="section"><h4>21. Bidding: Initial Events</h4></a>
+<p>After we determine the new metadata, we generate the initial array of
+events that we will emit. 
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Initial Bidding Events <a href="whist.html#1:21">21</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- initial-events
+  [{:meta {:high_bid {:bid previous-high-bid :player previous-high-bidder}}}
+   {:value last-bid :player last-bidder}
+   current-high-bid]
+  (case last-bid
+    "pass" @[(events/add-decoration last-bidder "bid_action" "passed")]
+    (array/concat 
+     (case previous-high-bidder
+       nil @[]
+       @[(events/clear-decoration previous-high-bidder "bid_action")])
+     (events/add-decoration last-bidder "bid_action" "declarer")
+     (events/add-decoration last-bidder "bid" (bids/to-text current-high-bid)))))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:26">26</a></p>
+</div>
+<p>As we can see, these all have to do with managing the player
+decorations that will be displayed by the game interface. 
+</p>
+
+</div>
+<a name="1:22"><div class="section"><h4>22. Clear Decoration</h4></a>
+<p>The only new event type here is <code>add-decoration</code>.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Events: Clear Decoration <a href="whist.html#1:22">22</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn clear-decoration [player name] {:event "clear_decoration" :name name :player player})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:68">68</a></p>
+</div>
+<p>There's very little to this---even less than to <code>{Events: Add Decoration,</code><a href="whist.html#1:15"><code>15</code></a><code>}</code>---but one point
+that is hopefully apparent is the purpose of
+the <code>name</code> field on the <code>add-decoration</code> struct: it allows us to refer
+back to this value when specifying what to clear. 
+</p>
+
+</div>
+<a name="1:23"><div class="section"><h4>23. Updating the Set of Not-Passed Players</h4></a>
+<p>The last piece of bookkeeping before we can determine whether to end
+or continue the action is to manage the set of players still in the auction.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Update Not Passed <a href="whist.html#1:23">23</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- update-not-passed
+  [{:meta {:not_passed not-passed}} {:value last-bid :player last-bidder}]
+  (case last-bid
+    # Handle a new pass. Mark the player as passed by removing them from the set.
+    "pass" (put not-passed (keyword last-bidder) nil))
+    not-passed)
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:26">26</a></p>
+</div>
+</div>
+<a name="1:24"><div class="section"><h4>24. Proceeding with the Auction</h4></a>
+<p>If (as will necessarily be the case for at least the first trip around
+the table) the auction isn't over yet, there are two possible
+states:
+</p>
+<ol>
+<li>Three of the four players have passed and the last is yet to bid;
+we should prompt them with the <code>bids/force-bid</code> call, which doesn't
+include the option to pass.
+</li>
+<li>We're in the middle of the auction. In that case, we should prompt
+them with all the bids that are higher than the current high bid.
+</li>
+</ol>
+<p>In both cases we include a prompt event. In the Tamerlane system there
+is no concept of <em>turns</em>---any player who has an active prompt can act
+and move the game state forward. In Bid Whist it's always exactly one
+player's turn, but that's not a necessary limitation of the
+system. We can emit prompts for multiple players at once.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Continue the Auction <a href="whist.html#1:24">24</a>}</span>
+<pre class="prettyprint lang-janet">
+(let [{:player last-bidder} action
+      next-bidder (players/next-player last-bidder players not-passed)]
+  (array/push events (events/add-decoration next-bidder "bid_action" "bidding"))
+  # The auction isn't over; include the set of players still bidding in the metadata.
+  [(merge state {:meta (put new-meta :not_passed not-passed)
+                 # State: Bid -&gt; Bid
+                 :phase "bid"})
+   (if (= 1 (length not-passed))
+     # If no one has bid and all but one have passed, the dealer has to bid.
+     (array/push events (events/pick1 "bid" next-bidder (bids/force-bid)))
+     # Otherwise, move to the next bidder.
+     (array/push events (events/pick1 "bid" next-bidder
+                                       (bids/available-bids high-bid))))])
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:19">19</a></p>
+</div>
+</div>
+<a name="1:25"><div class="section"><h4>25. Ending the Auction</h4></a>
+<p>If the auction isn't still going, it must be over. In that case we
+simply return an updated state that advances to the next phase---the
+discard phase---making sure to include the new metadata with the
+winning bid in it.
+</p>
+<p>Finally, we prompt the high bidder to complete their bid. If they won
+with a suit bid, that means they'll call the suit. If they
+won with a notrumps bid, they'll call Uptown or Downtown.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{End the Auction <a href="whist.html#1:25">25</a>}</span>
+<pre class="prettyprint lang-janet">
+[(merge state {:meta new-meta
+               # State: Bid -&gt; Discard
+               :phase "discard"})
+ # Bidder selects suit in a trumps bid or direction in a no-trumps bid.
+ (array/push events (events/pick1 "bid" high-bidder (bids/second-bid high-bid)))]
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:19">19</a></p>
+</div>
+</div>
+<a name="1:26"><div class="section"><h4>26. bid.janet</h4></a>
+<p>This is all we need to run the entire bidding phase. We've realized it
+as a recursive function, where the base case is moving to the next
+phase, and the recursive case is returning a state in the same phase.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>game/bid.janet</strong> <a href="whist.html#1:26">26</a>}</span>
+<pre class="prettyprint lang-janet">
+(import players)
+(import bids)
+(import events)
+
+<span class="nocode pln">{New Meta, <a href="whist.html#1:20">20</a>}</span>
+<span class="nocode pln">{Initial Bidding Events, <a href="whist.html#1:21">21</a>}</span>
+<span class="nocode pln">{Update Not Passed, <a href="whist.html#1:23">23</a>}</span>
+<span class="nocode pln">{Main Bid Function, <a href="whist.html#1:18">18</a>}</span>
+</pre>
+
+
+
+</div>
+</div>
+<a name="1:27"><div class="section"><h4>27. Draw and Discard</h4></a>
+<p>After the bidder names their full contract, they pick up the undealt
+kitty and then discard 6 cards.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>game/discard.janet</strong> <a href="whist.html#1:27">27</a>}</span>
+<pre class="prettyprint lang-janet">
+(import events)
+(import bids)
+
+(defn- make-full-bid [high-bid second-bid bidder]
+  (merge high-bid second-bid {:player bidder}))
+
+(defn evaluate-phase
+  ```
+  The bidder has named their full contract. 
+
+  They pick up the kitty, and are then prompted to discard 6 cards.
+
+  Expected metadata:
+  - `high_bid`: The winning bid in the auction.
+  Provides:
+  - `bid`: The full bid for the hand. 
+  ```
+  [{:meta {:high_bid {:bid high-bid}}} players {:player bidder :value second-bid}]
+  (let [full-bid (make-full-bid high-bid second-bid bidder)
+        full-bid-text (string (bids/to-text high-bid)
+                              ": "
+                              (bids/to-text second-bid bids/second-bids))] 
+       # State: Discard -&gt; Begin Play
+       [{:phase "begin_play" :meta {:bid full-bid}}
+        (array/concat
+         (map |(events/clear-decoration ($0 :id) "bid") players)
+         (map |(events/clear-decoration ($0 :id) "bid_action") players)
+         (events/add-decoration bidder "high_bid" full-bid-text)
+         (events/draw bidder 6)
+         (events/prompt-discard bidder 6))]))
+</pre>
+
+
+
+</div>
+<p>This phase is quite straightforward. The only new element is one new
+event.
+</p>
+
+</div>
+<a name="1:28"><div class="section"><h4>28. Prompt Discard</h4></a>
+
+<div class="codeblock">
+<span class="codeblock_name">{Events: Prompt Discard <a href="whist.html#1:28">28</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn prompt-discard [player count] {:event "prompt_discard" :player player :count count})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:68">68</a></p>
+</div>
+<p>This is the second kind of prompt we've seen, after <code>prompt_select</code>
+(available to us in this codebase via <code>events/pick1</code>). The player is
+prompted to select <code>count</code> cards from their hand, which the server
+will then discard for them.
+</p>
+<p>The same principles apply here as for drawing cards; the deck and the
+players' hands are managed by the server. In the next phase, when we
+receive the game state from the server, whatever cards the player
+selected will have already been removed from their hand.
+</p>
+
+</div>
+<a name="1:29"><div class="section"><h4>29. The Beginning of Play</h4></a>
+<p>Once the declarer has discarded their six cards, they score one trick
+and lead to the first trick.
+</p>
+<p>With the beginning of the play phase, we need to keep track of two new
+types of data: <strong>stacks</strong> and <strong>info</strong>.
+</p>
+
+</div>
+<a name="1:30"><div class="section"><h4>30. Stacks</h4></a>
+<p>A stack is any collection of one or more cards besides the deck and
+the players' hands. For any game, the stacks make up the table; any
+card or pile of cards on the table is part of a stack.
+</p>
+
+</div>
+<a name="1:31"><div class="section"><h4>31. Initializing the Stacks</h4></a>
+<p>In bid whist, there's only ever one pile of cards on the table: the
+cards played to the current trick. In the tamerlane system, the stacks
+<em>state</em> is quite simple: it's an object mapping the name of a stack to
+a list of card values. 
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Initial Stacks <a href="whist.html#1:31">31</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- init-stacks [] {:trick []})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:33">33</a></p>
+</div>
+<p>This is part of the game state, and so whatever we return in the state
+response will be the content of the stacks in the game. The play phase
+begins with a single stack, the <code>trick</code>, which is empty.
+</p>
+
+</div>
+<a name="1:32"><div class="section"><h4>32. Info</h4></a>
+<p>Info is the generic way of recording data that's important to keep
+track of the game. Unlike the metadata we've been using above, which
+was specific to our purposes and not designed to be exposed directly
+to players, there will be some game elements during the play phase
+that we do expect to be displayed directly (and which we will want to
+manipulate as state, rather than as side effects): namely, each player
+will have a count of current tricks and each team will have a score.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Initial Counters <a href="whist.html#1:32">32</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- tricks-counter [player-name] (keyword player-name "_tricks"))
+
+(defn- init-counters [bidder other-players]
+  (var counters (zipcoll (map |(tricks-counter ($0 :id)) other-players)
+                         (map (fn [_] 0) other-players)))
+  # It's the first trick; bidder gets one trick for the discard.
+  (put counters (tricks-counter bidder) 1))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:33">33</a></p>
+</div>
+<p>We structure these counters very similarly to the stacks: as an object
+mapping the name of the info box to the value it contains.
+</p>
+<p>In this case the names are <code>&lt;player name&gt;_tricks</code> and the values are 0
+for every other player, and 1 for the bidder.
+</p>
+
+</div>
+<a name="1:33"><div class="section"><h4>33. beginplay.janet</h4></a>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>game/beginplay.janet</strong> <a href="whist.html#1:33">33</a>}</span>
+<pre class="prettyprint lang-janet">
+(import events)
+
+<span class="nocode pln">{Initial Stacks, <a href="whist.html#1:31">31</a>}</span>
+<span class="nocode pln">{Initial Counters, <a href="whist.html#1:32">32</a>}</span>
+
+(defn evaluate-phase
+  ```
+  The bidder has discarded six cards. 
+
+  They may lead any card from their hand.
+
+  Provides:
+  - `suit`: The led suit of the current trick.
+  ```
+  [{:meta meta} players {:player bidder :value to-discard}]
+  (let [other-players (filter |(not= ($0 :id) bidder) players)]
+    # State: Begin -&gt; Play
+    [{:phase "play"
+      :meta (merge meta {:suit "undefined"})
+      :info (init-counters bidder other-players)
+      :stacks (init-stacks)}
+     (array/concat
+      # TODO: when players have names as well as IDs, this will map to names.
+      (map |(events/add-info (tricks-counter ($0 :id)) ($0 :id)) players)
+      (events/prompt-play bidder))]))
+</pre>
+
+
+
+</div>
+<p>Here we return the state--with two new top-level attributes, <code>info</code>
+and <code>stacks</code>---and the events.
+</p>
+
+</div>
+<a name="1:34"><div class="section"><h4>34. Prompt Play</h4></a>
+<p>The first new event type we can cover is <code>prompt_play</code>.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Events: Prompt Play <a href="whist.html#1:34">34</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn prompt-play
+  [player &amp;opt from]
+  {:event "prompt_play" :player player :to "trick" :count 1 :from from})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:68">68</a></p>
+</div>
+<p>This is the last prompt type that we need. It's structured similarly
+to <code>prompt_discard</code>, but it has a little more information in it. In
+addition to <code>count</code>, there's also <code>to</code> and <code>from</code>.
+</p>
+<p><code>to</code> is required and must be the name of a stack in the game. Unlike
+in the case of discards, when a player plays a card it has to <em>go</em>
+somewhere; given a <code>to</code> value, the server will be able to remove the
+card from the player's hand and put it on the top of the specified
+stack.
+</p>
+<p>Finally, we sometimes need to specify <code>from</code>. This will be a list of
+cards in the player's hand that they can select from. In bid whist,
+players must follow suit if they can; therefore, we will sometimes
+have to specify which cards in the hand are of the correct suit when
+prompting the player.
+</p>
+
+</div>
+<a name="1:35"><div class="section"><h4>35. Add Info</h4></a>
+
+<div class="codeblock">
+<span class="codeblock_name">{Events: Add Info <a href="whist.html#1:35">35</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn add-info [id label] {:event "add_info" :id id :label label})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:68">68</a></p>
+</div>
+<p>We would like to be able to display useful labels on our info
+boxes. For that reason we can make an <code>add_info</code> event, which simply
+associates an info box ID with a more friendly label (in this case
+, we'll be associating an info box like <code>North_tricks</code> to a label like <code>North</code>
+</p>
+<p><strong>[NOTE]</strong> Update this with Player Names.
+</p>
+
+</div>
+<a name="1:36"><div class="section"><h4>36. Play</h4></a>
+<p>In the play phase, players take turns playing a single card to a
+trick. Whoever wins the trick leads to the next one.
+</p>
+<p>This creates a situation similar to the bidding phase: whenever we
+handle a call in this phase, there are two main cases:
+</p>
+<ul>
+<li>Each player has played a single card to the trick; resolve the
+  trick.
+</li>
+<li>We're in the middle of the trick.
+</li>
+</ul>
+
+<div class="codeblock">
+<span class="codeblock_name">{Main Play Function <a href="whist.html#1:36">36</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- add-to-stack [stack card] (tuple ;stack card))
+
+(defn evaluate-phase
+  ```
+  Players play to tricks.
+  
+  In the first trick, the bidder leads; every subsequent trick, the
+  winner of the previous trick leads.
+
+  Players must follow suit if possible; if not, they can either
+  discard or trump.
+
+  Expected stacks:
+  - `trick`: The current trick.
+  Expected metadata:
+  - `bid`: The current contract.
+  - `suit`: The led suit of the current trick.
+  ```
+  [state players {:player player :value @[card-played]}]
+  (let [just-played (with-player card-played player)
+        current-trick (-&gt; state
+                          (get-in [:stacks :trick])
+                          (add-to-stack just-played))]
+    (case (length current-trick)
+      4 (end-trick players state current-trick)
+      (continue-trick players state current-trick just-played))))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:48">48</a></p>
+</div>
+<p>We've structured our program so that the beginning of the play, before
+someone has led the first card, is the previous phase. That allows us
+to always assume that someone has played a card in order to enter this
+function.
+</p>
+<p>Notice that the value of the action is an array of cards, though we
+assume that only one card was passed in; since the <code>prompt_play</code>
+prompt is able to specify more than one card, an incoming <code>play</code>
+action will always refer to a list of cards---whether the player was
+prompted for one or more.
+</p>
+
+</div>
+<a name="1:37"><div class="section"><h4>37. Proceeding with the Trick</h4></a>
+<p>Let's first handle the case where the current trick continues.
+</p>
+<p>The main bit of state we need to maintain, in addition to adding the
+just-played card to the <code>trick</code> stack, is the <em>led suit</em>, if any, of
+the current trick.
+</p>
+
+</div>
+<a name="1:38"><div class="section"><h4>38. Determining the Current Suit</h4></a>
+<p>There are a few different possibilities to handle when it comes to
+determining the current suit.
+</p>
+<p>The simplest is that the suit has already been determined when a
+previous player played to the trick. If that's the case, it can't be
+changed. On the other hand, if it's <code>"undefined"</code> (which is what we
+initialized it to in the previous phase), we probably need to
+set it for the rest of the trick. This value will determine both what
+cards can be played by other players, as well as which played card
+wins the trick.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{New Suit <a href="whist.html#1:38">38</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- new-suit
+  ```
+  Determine the led suit in a given trick.
+
+  - If the suit has already been determined, use that.
+  - If the card isn't a joker, the led suit is the suit of that card.
+  - If the card is a joker :
+    - If the bid is notrumps, the led suit hasn't been determined yet.
+    - Otherwise, the led suit is the trump suit.
+  ```
+  [current-suit bid card-played]
+  # We need to explicitly set the current suit to `"undefined"`. This
+  # allows us to check for the edge case where the suit has
+  # not been set, even after a card (or two) has been played
+  # - if the first card is a Joker, and it's no trumps.
+  (if (not= current-suit "undefined")
+    current-suit
+    (match [(bid :suit) (card-played :suit)]
+      ["notrumps" "joker"] "undefined"
+      [trumps "joker"] trumps
+      [_ led-suit] led-suit)))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:48">48</a></p>
+</div>
+<p>There's one subtle edge case we need to cover: if the bid was a
+no-trumps bid, and if the led card is a joker, the suit remains
+undefined. This means we can't assume that the first card is
+the one that determines the suit; that's why we have to look for the
+string <code>"undefined"</code> rather than assuming it's always set on the first
+lead to the trick.
+</p>
+
+</div>
+<a name="1:39"><div class="section"><h4 class="noheading">39. </h4></a>
+<p>Once we've determined the suit of the trick, we simply need to add the
+played card to the trick and prompt the next player to play. 
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Continue the Trick <a href="whist.html#1:39">39</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- with-player [card player] (merge-into @{:player player} card))
+
+(defn- continue-trick
+  ```
+  Handle the first, second or third player playing to a trick.
+
+  Set the led suit if necessary, update the stack and prompt the next player in sequence.
+  ```
+  [players
+   {:meta {:bid current-bid :suit current-suit} :info info}
+   current-trick
+   just-played]
+  (let [new-suit (new-suit current-suit current-bid just-played)
+        id-to-prompt (players/next-player (just-played :player) players)
+        hand-to-prompt (-&gt; |(= ($0 :id) id-to-prompt)
+                           (find players)
+                           (in :hand))
+        play-prompt (-&gt;&gt; (cards/of-suit-or-off new-suit current-bid hand-to-prompt)
+                         (events/prompt-play id-to-prompt))]
+
+    [{:phase "play"
+      :info info
+      :meta {:bid current-bid :suit new-suit}
+      :stacks {:trick current-trick}}
+     [(events/add-decoration (just-played :player)
+                             "play_action"
+                             (string "played " (cards/to-text just-played)))
+      play-prompt]]))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:48">48</a></p>
+</div>
+</div>
+<a name="1:40"><div class="section"><h4>40. Ending the Trick</h4></a>
+<p>Finishing the current trick is more complex, because there are two
+options again:
+</p>
+<ul>
+<li>This is the last trick of the hand, in which case we need to adjust
+  the team scores, and either end the game or go back to a new deal;
+</li>
+<li>We're in the middle of the hand and we should clear this trick.
+</li>
+</ul>
+<p>Either case begins with determining who wins the trick and updating
+the trick counters accordingly.
+</p>
+<p>After that, we can decide between the two simply by looking at one of
+the players' hands and seeing if there are any cards left to play.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{End the Trick <a href="whist.html#1:40">40</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- end-trick
+  ```
+  Handle the last player playing to a trick.
+
+  Determine which card takes the trick and update: the number of
+  tricks taken; if applicable, the team scores.
+  ```
+  [players state current-trick]
+  (let [{:meta {:bid current-bid :suit current-suit}} state
+        winning-player (-&gt; current-trick
+                           (cards/high-card current-suit current-bid)
+                           (in :player))
+        events (map |(events/clear-decoration ($0 :id) "play_action") players)
+        updated-info (update (state :info) (keyword winning-player "_tricks") inc)]
+    (case (length ((players 0) :hand)) 
+      # There are no more cards in the players' hands; resolve the
+      # current hand. (NB: we expect that the game server will be
+      # responsible for updating the hand values on the basis of a
+      # `play` prompt.)
+      0 (next-hand players events updated-info current-bid)
+      (continue-hand events updated-info current-bid winning-player))))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:48">48</a></p>
+</div>
+</div>
+<a name="1:41"><div class="section"><h4>41. Proceeding with the Hand</h4></a>
+<p>The simpler case is that the players have more cards left, and thus we
+should simply continue the current hand. To do so we just need to
+clear out any state specific to this trick and prompt the winner to
+play again.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Continue the Hand <a href="whist.html#1:41">41</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- continue-hand [events info current-bid winning-player]
+  (array/push events (events/prompt-play winning-player))
+  # State: Play-&gt;Play
+  [@{:phase "play"
+     :info info
+     :meta @{:bid current-bid :suit "undefined"}
+     :stacks @{:trick []}}
+   events])
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:48">48</a></p>
+</div>
+</div>
+<a name="1:42"><div class="section"><h4>42. Ending the Hand</h4></a>
+<p>More complex is if this is the end of the hand, ie, if the players
+have played all their cards.
+</p>
+<p>There's more bookkeeping in this case. We need to do a few things in
+order:
+</p>
+<ul>
+<li>Determine the total number of tricks made by the declaring team;
+</li>
+<li>Determine if they've made their bid;
+</li>
+<li>Determine the adjustment to the declarers' score;
+</li>
+<li>Determine if the declarers have gone above the winning threshold or
+  below the losing threshold, and end the game if so.
+</li>
+</ul>
+
+</div>
+<a name="1:43"><div class="section"><h4>43. Getting the Total Number of Tricks</h4></a>
+<p>We don't actually keep track of the total number of tricks made by
+each team (though we certainly could); that means that at the end of
+the end, we need to figure out which player is on which team, get
+those players' tricks taken, and add them together.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Total Tricks <a href="whist.html#1:43">43</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- bidding-team
+  [players bid]
+  ((find |(= ($0 :id) (bid :player)) players) :team))
+
+(defn- non-bidding-team
+  [players bid]
+  ((find |(not= ($0 :id) (bid :player)) players) :team))
+
+(defn- total-tricks
+  [players bid info]
+  (let [bidding-team (bidding-team players bid)] 
+    (-&gt;&gt; (players/of-team players bidding-team)
+         (map |(keyword $0 "_tricks"))
+         (map |(info $0))
+         (sum))))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:48">48</a></p>
+</div>
+</div>
+<a name="1:44"><div class="section"><h4>44. Getting the Score Multiplier</h4></a>
+<p>One interesting wrinkle in Bid Whist is that if the bid was in
+no-trumps, the value of the hand---positive or negative---is
+doubled. We can handle that by either returning a multiplier function which
+either doubles a value, or one that simply returns it.
+</p>
+<p>If the declaring team fails their bid, the negative value of the hand
+is whatever they bid. If they make their bid, the positive value of
+the hand is the number of tricks that they make minus 6.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Bid Values <a href="whist.html#1:44">44</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- adjustment-for-bid
+  ```
+  A contract's value is its numerical value, or double its value if it's notrumps.
+  ```
+  [bid]
+  (case (bid :suit)
+    "notrumps" |(* $0 2)
+    |$0))
+
+(defn- tricks-value
+  [total-tricks]
+  (- total-tricks 6))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:48">48</a></p>
+</div>
+</div>
+<a name="1:45"><div class="section"><h4>45. Checking For Win Conditions</h4></a>
+<p>It's quite straightforward to tell if the bidding team has won or
+lost a hand: they simply need to have taken their bid + 6.
+</p>
+<p>Similarly, a team has won the game if they go above 7 game points;
+they have lost the game if they go below -7 game points.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Made Bid? <a href="whist.html#1:45">45</a>}</span>
+<pre class="prettyprint lang-janet">
+(def- score-threshold 7)
+
+(defn- won? [val] (&gt;= val score-threshold))
+(defn- lost? [val] (&lt;= val (- score-threshold)))
+
+(defn- made-bid?
+  ```
+  A team has made a bid if their combined tricks is greater than or equal to their bid + 6.
+  ```
+  [total-tricks bid]
+  (&gt;= total-tricks (+ 6 (bid :count)))) 
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:48">48</a></p>
+</div>
+</div>
+<a name="1:46"><div class="section"><h4 class="noheading">46. </h4></a>
+<p>Now that we know the win conditions for a hand and game, we can adjust
+the scores accordingly.
+</p>
+<p>In both cases, it's only the declarers' scores that need to be
+adjusted. We only need to pull out the opponents' score from the game
+info in order to populate the new state with it.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{End the Hand <a href="whist.html#1:46">46</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- next-hand [players events info current-bid]
+  (let [total-tricks (total-tricks players current-bid info)
+        score-multiplier (adjustment-for-bid current-bid)
+        bidding-team-keyword (-&gt; players (bidding-team current-bid) (keyword))
+        bidders-score (in info bidding-team-keyword)
+        bidders-score (if (made-bid? total-tricks current-bid)
+                        (+ bidders-score (-&gt; total-tricks (tricks-value) (score-multiplier)))
+                        (- bidders-score (-&gt; current-bid (in :count)
+                        (score-multiplier) )))
+        opponent-team-keyword (-&gt; players (non-bidding-team current-bid) (keyword))
+        opponents-score (in info opponent-team-keyword)]
+            
+    (if (or (won? bidders-score) (lost? bidders-score))
+      (array/push events (events/end-game players
+                                          bidding-team-keyword
+                                          bidders-score
+                                          opponent-team-keyword
+                                          opponents-score)))
+    # State: Play-&gt;Deal
+    [@{:phase "deal"
+       :info {opponent-team-keyword opponents-score
+              bidding-team-keyword bidders-score}}
+     events]))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:48">48</a></p>
+</div>
+</div>
+<a name="1:47"><div class="section"><h4>47. Ending the Game</h4></a>
+<p>If the bidders have won or lost, the game is over. In the Tamerlane
+system, we simply end a game by emitting an event; it's not part of
+the game state.
+</p>
+<p>Different card games have different concepts of ending a game; in some
+games (such as this one), teams win and lose a game together; in some,
+each player plays for themselves; in yet others, players might be on
+fixed or shifting teams and still score differently.
+</p>
+<p>To accomodate that degree of flexibility, we end a game in the
+Tamerlane system by emitting an event that contains a total ranking of
+all the players by score. In a game like Bid Whist, where players are
+on fixed teams, both players on a team will end the game with the same
+score. Thus, out of four players, two will be in first place and two
+will be in second place.
+</p>
+<p>The specific format of the <code>scores</code> value is a struct mapping each
+player ID to their final score.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Events: End Game <a href="whist.html#1:47">47</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn end-game
+  [players team1 score1 team2 score2]
+  (let [players1 (players/of-team players (string team1))
+        players2 (players/of-team players (string team2))]
+    {:event "end_game" :scores (zipcoll (array/concat players1 players2)
+                                        [score1 score1 score2 score2])}))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:68">68</a></p>
+</div>
+</div>
+<a name="1:48"><div class="section"><h4 class="noheading">48. </h4></a>
+<p>Having covered all the possible outcomes of a play state transition,
+we can wrap up all the components into a single module.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>game/play.janet</strong> <a href="whist.html#1:48">48</a>}</span>
+<pre class="prettyprint lang-janet">
+(import cards)
+(import players)
+(import events)
+# Play utility logic
+<span class="nocode pln">{New Suit, <a href="whist.html#1:38">38</a>}</span>
+<span class="nocode pln">{Total Tricks, <a href="whist.html#1:43">43</a>}</span>
+<span class="nocode pln">{Bid Values, <a href="whist.html#1:44">44</a>}</span>
+<span class="nocode pln">{Made Bid?, <a href="whist.html#1:45">45</a>}</span>
+# Possible branches of a play state transition
+<span class="nocode pln">{Continue the Trick, <a href="whist.html#1:39">39</a>}</span>
+<span class="nocode pln">{Continue the Hand, <a href="whist.html#1:41">41</a>}</span>
+<span class="nocode pln">{End the Hand, <a href="whist.html#1:46">46</a>}</span>
+<span class="nocode pln">{End the Trick, <a href="whist.html#1:40">40</a>}</span>
+<span class="nocode pln">{Main Play Function, <a href="whist.html#1:36">36</a>}</span>
+</pre>
+
+
+
+</div>
+<h2> Supplementary Logic</h2>
+
+</div>
+<a name="1:49"><div class="section"><h4>49. Other Endpoints</h4></a>
+<p>We have implemented the entirety of our <code>/next</code> API, which contains
+all of rules for our game. 
+</p>
+<p>In order to have a working rules engine, we need to expose two more
+endpoints: one to return some basic configuration values that will be
+the case for all Bid Whist sessions, and one to return the initial
+game state for a single session.
+</p>
+
+</div>
+<a name="1:50"><div class="section"><h4>50. /config</h4></a>
+<p>Our <code>config</code> function is called by the game server to get the
+configuration values which are independent from session to session. In
+particular, that includes:
+</p>
+<ul>
+<li>what deck to use;
+</li>
+<li>what the table configuration is;
+</li>
+<li>what the info box configuration is.
+</li>
+</ul>
+
+<div class="codeblock">
+<span class="codeblock_name">{Config <a href="whist.html#1:50">50</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn
+  config
+  []
+  {:deck "52JJ"
+   :player_count 4
+   :stacks [{:id "trick"
+             :label "trick"
+             :orientation :up
+             :max-size 4
+             :alignment :stagger}]
+   :info [{:id "north_south" :label "North/South" :value 0}
+          {:id "east_west" :label "East/West" :value 0}]})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:52">52</a></p>
+</div>
+</div>
+<a name="1:51"><div class="section"><h4>51. /init</h4></a>
+<p>Finally, we need to expose an <code>init</code> function that returns the
+starting state for a specific session. This function takes the list of
+player IDs in the game and returns an object with <code>players</code> and
+<code>state</code> in it. 
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Init <a href="whist.html#1:51">51</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn-
+  make-player
+  [id team]
+  {:id id :team team})
+
+(defn init
+  "Create an initial game state."
+  [fst snd thd fth]
+  {:players [(make-player fst "north_south")
+             (make-player snd "east_west")
+             (make-player thd "north_south")
+             (make-player fth "east_west")]
+   :state {:phase "deal" :info {:north_south 0 :east_west 0}}})
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:52">52</a></p>
+</div>
+</div>
+<a name="1:52"><div class="section"><h4>52. init.janet</h4></a>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>init.janet</strong> <a href="whist.html#1:52">52</a>}</span>
+<pre class="prettyprint lang-janet">
+<span class="nocode pln">{Config, <a href="whist.html#1:50">50</a>}</span>
+<span class="nocode pln">{Init, <a href="whist.html#1:51">51</a>}</span>
+</pre>
+
+
+
+</div>
+<h1> The JSON API</h1>
+<p>In the Tamerlane application, game rules engines are installed by
+specifying a <strong>callback URL</strong> for the server to hit. Each call that
+the server makes to the rules engine takes the form of an
+JSON-formatted HTTP request, and expects a JSON-formatted response.
+</p>
+<p><strong>[NOTE]</strong>: The protocol around specific status codes and port numbers
+is still very much in development.
+</p>
+<p>In Janet, the standard web framework is <a href="https://joyframework.com/">Joy</a>; we'll define an
+extremely simple API using that library.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>main.janet</strong> <a href="whist.html#1:52">52</a>}</span>
+<pre class="prettyprint lang-janet">
+(import json)
+(import init)
+(import whist)
+
+(use joy)
+
+(route :get "/api/v1/whist/config" :config)
+(route :get "/api/v1/whist/init" :init)
+(route :post "/api/v1/whist/next" :next)
+
+<span class="nocode pln">{Config Handler, <a href="whist.html#1:53">53</a>}</span>
+<span class="nocode pln">{Init Handler, <a href="whist.html#1:54">54</a>}</span>
+<span class="nocode pln">{Next Handler, <a href="whist.html#1:55">55</a>}</span>
+
+(def app (app {:layout layout :csrf-token false}))
+
+(defn main [&amp; args]
+  (server app 9001))
+</pre>
+
+
+
+</div>
+</div>
+<a name="1:53"><div class="section"><h4>53. /api/v1/whist/config</h4></a>
+<p>Our config endpoint needs to do very little with the request, as there
+are no arguments provided by the Tamerlane server.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Config Handler <a href="whist.html#1:53">53</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn config [request]
+  (def resp (init/config))
+  (application/json resp))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:52">52</a></p>
+</div>
+</div>
+<a name="1:54"><div class="section"><h4>54. /api/v1/whist/init</h4></a>
+<p>Our init endpoint is only slightly more complex; the Tamerlane server
+has a single argument to <code>/init</code>, which is a list of players. Those
+are sent under the query parameter <code>players</code> as a comma-separated
+string. For instance, a sample call might be
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Sample API Call <a href="whist.html#1:54">54</a>}</span>
+<pre class="prettyprint lang-janet">
+GET http://localhost:9001/api/v1/whist/init?players=North,East,South,West
+</pre>
+
+
+
+</div>
+<p>We can handle it simply by splitting on the commas.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Init Handler <a href="whist.html#1:54">54</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn init [request]
+  (let [players (get-in request [:query-string :players])
+        [p1 p2 p3 p4] (string/split "," players)
+        resp (init/init p1 p2 p3 p4)]
+  
+    (application/json resp)))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:52">52</a></p>
+</div>
+</div>
+<a name="1:55"><div class="section"><h4>55. /api/v1/whist/next</h4></a>
+<p>Finally, we need to expose the <code>next</code> business logic itself. 
+</p>
+<p>We'd like to be able to do some basic input validation and to return
+an error response if we get bad input (if only to make it easier to
+develop our application), so we have some very simple parameter
+validation associated with this endpoint.
+</p>
+<p>The output of our <code>next</code> function is always a two-tuple of state and
+events. In fact, the expected response format in the API is an object
+with a <code>state</code> attribute and an <code>events</code> attribute, so we need to
+match on the two-tuple that comes from our business logic and return
+the response that the Tamerlane server expects.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Next Handler <a href="whist.html#1:55">55</a>}</span>
+<pre class="prettyprint lang-janet">
+(def- params
+  (params :next
+    (validates [:action] :required true)
+    (permit [:action :state :players])))
+
+(defn next [request]
+  (def handler (fiber/new (fn [req]
+                            (whist/next (params req))) :e))
+  (match (resume handler request)
+    {:error error-msg} @{:status 422
+                         :body (json/encode {:error error-msg})
+                         :headers @{"Content-Type" "application/json"}}
+    [state events]
+    (application/json {:state state :events events})))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:52">52</a></p>
+</div>
+</div>
+<a name="1:56"><div class="section"><h4 class="noheading">56. </h4></a>
+<p>We now have a fully working Tamerlane rules engine, which models a
+complete version of the game of Bid Whist. If we run our web server,
+then we can point the Tamerlane server at its URL and play a game.
+</p>
+<h1> Appendix I</h1>
+
+</div>
+<a name="1:57"><div class="section"><h4>57. Appendix: Bids</h4></a>
+<p>We can hardcode the list of possible bids and define a few functions
+to expose them. They are written in the <code>select</code> format (ie, in the
+format used to define the choices for a <code>select</code> prompt). It's a
+simple format, a list of pairs, where the first element is the value
+that will be sent to the rules engine if that choice is selected, and
+the second element is the string to display when exposing the prompt
+to the player.
+</p>
+<p>This kind of general format gives us a maximum of flexibility as
+game-developers; in this case, the value of a selection is an object
+containing <code>count</code> and <code>direction</code> attributes, but this value will be
+passed transparently back to us from the server, so we can make it
+whatever we like (as long as it can be serialized and deserialized
+from JSON!).
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{All Bids <a href="whist.html#1:57">57</a>}</span>
+<pre class="prettyprint lang-janet">
+(def-
+  bids
+  [[{:count 3 :direction "up"} "3 Uptown"]
+   [{:count 3 :direction "down"} "3 Downtown"]
+   [{:count 3 :suit "no_trumps"} "3 No-Trumps"]
+   [{:count 4 :direction "up"} "4 Uptown"]
+   [{:count 4 :direction "down"} "4 Downtown"]
+   [{:count 4 :suit "no_trumps"} "4 No-Trumps"]
+   [{:count 5 :direction "up"} "5 Uptown"]
+   [{:count 5 :direction "down"} "5 Downtown"]
+   [{:count 5 :suit "no_trumps"} "5 No-Trumps"]
+   [{:count 6 :direction "up"} "6 Uptown"]
+   [{:count 6 :direction "down"} "6 Downtown"]
+   [{:count 6 :suit "no_trumps"} "6 No-Trumps"]
+   [{:count 7 :direction "up"} "7 Uptown"]
+   [{:count 7 :direction "down"} "7 Downtown"]
+   [{:count 7 :suit "no_trumps"} "7 No-Trumps"]])
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:60">60</a></p>
+</div>
+</div>
+<a name="1:58"><div class="section"><h4>58. Determining the Second Bid</h4></a>
+<p>For each of the two types of bids in the auction--suited bids and
+no-trumps bids---there's a second call that the declarer makes when
+they have won the auction. For suited bids, the declarer calls the
+suit. For no-trumps bids, the declarer calls the direction.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Second Bids <a href="whist.html#1:58">58</a>}</span>
+<pre class="prettyprint lang-janet">
+(def- direction [[{:direction "up"} "Uptown"]
+                [{:direction "down"} "Downtown"]])
+
+(def- suit [[{:suit "hearts"} "Hearts"]
+           [{:suit "spades"} "Spades"]
+           [{:suit "diamonds"} "Diamonds"]
+           [{:suit "clubs"} "Clubs"]])
+
+(def second-bids (array/concat @[] direction suit))
+
+(defn- no-trumps? [bid] (= (bid :suit) "no_trumps"))
+
+(defn second-bid
+  [bid]
+  (if (no-trumps? bid) direction suit))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:60">60</a></p>
+</div>
+</div>
+<a name="1:59"><div class="section"><h4>59. Determining Available Bids</h4></a>
+<p>The bulk of the game logic that we need to implement in the bids
+module is determining what bids are available for the next bidder
+given what the current high bid in the auction is.
+</p>
+<p>The logic is slightly complex, because <em>Uptown and Downtown bids are
+equivalent</em> in terms of the auction. That means that if the current
+high bid is a suited bid, the next available bid is the no-trumps bid
+of the same number. If the high bid is a no-trumps bid, the next
+available bid is the Uptown bid of the next number.
+</p>
+<p>Finally, if three out of four players pass, then the fourth player
+<em>has</em> to bid; so in that case, the <code>Pass</code> option isn't available to them.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Available Bids <a href="whist.html#1:59">59</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- no-trumps? [bid] (= (bid :suit) "no_trumps"))
+
+(defn available-bids
+  [&amp;opt high-bid]
+  (case high-bid
+    nil (array ;bids ["pass" "Pass"])
+    (if-let [minimum-bid (if (no-trumps? high-bid)
+                           {:count (inc (high-bid :count)) :direction "up"} 
+                           {:count (high-bid :count) :suit "no_trumps"})
+             minimum-bid-ind (find-row-index minimum-bid bids)]
+      (array/push (array/slice bids minimum-bid-ind) ["pass" "Pass"])
+      @[["pass" "Pass"]])))
+
+(defn force-bid
+  "The bidder can't pass; they can only select an actual bid."
+  []
+  (array ;bids))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:60">60</a></p>
+</div>
+</div>
+<a name="1:60"><div class="section"><h4>60. bids.janet</h4></a>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>bids.janet</strong> <a href="whist.html#1:60">60</a>}</span>
+<pre class="prettyprint lang-janet">
+<span class="nocode pln">{All Bids, <a href="whist.html#1:57">57</a>}</span>
+<span class="nocode pln">{Second Bids, <a href="whist.html#1:58">58</a>}</span>
+(defn- find-row-index [bid source] (find-index |(= ($0 0) bid) source))
+
+(defn to-text
+  [bid &amp;opt source]
+  (default source bids)
+  (if-let [ind (find-row-index (freeze bid) source)
+           row (source ind)]
+    (row 1)
+    (error (string "Not found: " (string/format "%q" bid) " in " (string/format "%q" source)))))
+<span class="nocode pln">{Available Bids, <a href="whist.html#1:59">59</a>}</span>
+</pre>
+
+
+
+</div>
+<h1> Appendix II</h1>
+
+</div>
+<a name="1:61"><div class="section"><h4>61. Appendix: Cards</h4></a>
+<p>In Tamerlane, cards are represented in data as simple objects. They
+have two attributes, <code>suit</code> and <code>rank</code>.
+</p>
+<p>The definition of which cards are contained in any deck type is
+currently stored on the Tamerlane server, and deck types are specified
+by name. For instance, Bid Whist uses the <code>52JJ</code> deck, which is the
+normal 52-card Anglo-French deck with two Jokers.
+</p>
+<p>Our card logic is a crucial element of the game. This module encodes
+the logic determining what can be legally played to a given trick, as
+well as how to determine which card wins a given trick.
+</p>
+
+</div>
+<a name="1:62"><div class="section"><h4>62. Representing Cards</h4></a>
+<p>The card ranks are encoded as integers in "standard" order, with Aces
+represented with 1 up to Kings at 13.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Card to Text <a href="whist.html#1:62">62</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn to-text [{:suit suit :rank rank}]
+  (case suit
+    "joker" (case rank
+              2 "Big Joker"
+              1 "Little Joker")
+    (let [suits {"diamonds" "♦" "spades" "♠" "clubs" "♣" "hearts" "♥"}
+          ranks {1 "Ace"
+                 2 "2"
+                 3 "3"
+                 4 "4"
+                 5 "5"
+                 6 "6"
+                 7 "7"
+                 8 "8"
+                 9 "9"
+                 10 "10"
+                 11 "J"
+                 12 "Q"
+                 13 "K"}]
+        (string (suits suit) (ranks rank)))))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:66">66</a></p>
+</div>
+</div>
+<a name="1:63"><div class="section"><h4>63. Determining What Can Be Played</h4></a>
+<p>The rules of following suit in Bid Whist are fairly simple:
+</p>
+<ul>
+<li>If a player can follow suit, they must;
+</li>
+<li>Otherwise, they can play any card.
+</li>
+</ul>
+<p>Our job is only somewhat complicated by the variable role of the
+Joker. In a suited contract, Jokers behave as though they were members
+of the trump suit. On the other hand, in a no-trumps contract, Jokers
+are members of their own suit.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Of Suit or Off <a href="whist.html#1:63">63</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- of-suit
+  "Return any cards in stack that match the led suit."
+  [led-suit stack]
+  (let [without-jokers |(= led-suit ($0 :suit))]
+    (filter without-jokers stack)))
+
+(defn- of-suit-or-jokers
+  "Return any cards in stack that match the led suit, or are jokers."
+  [led-suit stack]
+  (let [with-jokers |(or (= led-suit ($0 :suit))
+                         (= "joker" ($0 :suit)))]
+    (filter with-jokers stack)))
+
+(defn of-suit-or-off
+  "Return any cards in stack that match the led suit, otherwise return all cards."
+  [led-suit current-bid stack]
+  (let [on-suit (if (= led-suit (current-bid :suit))
+                  # If the led suit is trumps, then look for all cards
+                  # of that suit or jokers.
+                  (of-suit-or-jokers led-suit stack)
+                  # Otherwise, look just for cards of that suit.
+                  (of-suit led-suit stack))]
+    (if (&gt; (length on-suit) 0) on-suit stack)))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:66">66</a></p>
+</div>
+<p>We can be a bit clever here by checking to see if the led suit is the
+same as the suit of the contract, since <code>"notrumps"</code> is not the suit
+of any card.
+</p>
+
+</div>
+<a name="1:64"><div class="section"><h4>64. Determining the Winning Card</h4></a>
+<p>The other crucial element of our card logic is the function which
+actually determines who takes a trick. In our play phase, we have
+decorated each card with the player who played it. Thus, in this
+module, we determine the highest card in the trick, and then back in
+the play we can pull the winning player off of it.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{High Card <a href="whist.html#1:64">64</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- of-suit-or-trumps
+  "Return any cards in stack that match the led suit, or are trumps."
+  [led-suit trumps stack]
+  (let [with-jokers-and-trumps
+        |(or (= led-suit ($0 :suit))
+             (= trumps ($0 :suit))
+             (= "joker" ($0 :suit)))]
+    (filter with-jokers-and-trumps stack)))
+
+(defn high-card
+  "Trick resolution for all Bid Whist games."
+  [stack led-suit bid]
+  (let [f (make-compare-enable-fn bid)]
+    (-&gt;&gt; stack
+         # Get a version of the current-trick where
+         # each card has a `:compare` method that's
+         # aware of the current bid.
+         (map f)
+         (of-suit-or-trumps led-suit (bid :suit))
+         # Get the highest card according to each
+         # one's `:compare`.
+         (extreme compare&gt;))))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:66">66</a></p>
+</div>
+</div>
+<a name="1:65"><div class="section"><h4>65. Compare-Enabled Cards</h4></a>
+<p>In this program, possibly the most idiomatic way to find the winning
+card is to take advantage of some specific features of the Janet
+language. In particular we're taking advantage of Janet's OO features
+by defining some <strong>prototype</strong> cards with custom <code>compare</code> methods,
+and then setting the right prototype for the cards we are comparing
+according to the contract they're being evaluated under.
+</p>
+<p>This arguably has more to do with the specifics of object-oriented
+programming in Janet than anything having to do with the Tamerlane
+system, so feel free to skip it if it's not of particular interest.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Enable Card Comparison <a href="whist.html#1:65">65</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn- uptown [a b] (match [a b]
+            # `1` is the rank of the Ace.
+            @[1 1] 0
+            @[1 _] 1
+            @[_ 1] -1
+            @[x y] (compare x y)))
+
+(defn- downtown [a b] (match [a b]
+            # `1` is the rank of the Ace.
+            @[1 1] 0
+            @[1 _] 1
+            @[_ 1] -1
+            @[x y] (- (compare x y))))
+
+(defn- uptown-card [trumps]
+  @{:compare (fn [self other]
+               (match [(self :suit) (other :suit)]
+                 @["joker" "joker"] (compare (self :rank) (other :rank))
+                 @["joker" _] 1
+                 @[_ "joker"] -1
+                 @[trumps trumps] (uptown (self :rank) (other :rank))
+                 @[trumps _] 1
+                 @[_ trumps] -1 
+                 @[_ _] (uptown (self :rank) (other :rank))))})
+
+(defn- downtown-card [trumps]
+  @{:compare (fn [self other]
+               (match [(self :suit) (other :suit)]
+                 @["joker" "joker"] (compare (self :rank) (other :rank))
+                 @["joker" _] 1
+                 @[_ "joker"] -1
+                 @[trumps trumps] (downtown (self :rank) (other :rank))
+                 @[trumps _] 1
+                 @[_ trumps] -1 
+                 @[_ _] (downtown (self :rank) (other :rank))) )})
+
+(def- notrumps-card
+  @{:compare (fn [self other]
+               (match [(self :suit) (other :suit)]
+                 @["joker" "joker"] (compare (self :rank) (other :rank))
+                 @["joker" _] -1
+                 @[_ "joker"] 1
+                 @[_ _] (uptown (self :rank) (other :rank))))})
+
+(def- notrumps-downtown-card
+  @{:compare (fn [self other]
+               (match [(self :suit) (other :suit)]
+                 @["joker" "joker"] (compare (self :rank) (other :rank))
+                 @["joker" _] -1
+                 @[_ "joker"] 1
+                 @[_ _] (downtown (self :rank) (other :rank))))})
+
+(defn- make-compare-enable-fn [current-bid]
+  (let [proto (match [(current-bid :suit) (current-bid :direction)]
+                @["notrumps" "up"] notrumps-card
+                @["notrumps" "down"] notrumps-downtown-card
+                @[trumps "up"] (uptown-card trumps)
+                @[trumps "down"] (downtown-card trumps))]
+    (fn [card]
+      (table/setproto card proto))))
+</pre>
+
+
+<p class="seealso">Used in section <a href="whist.html#1:66">66</a></p>
+</div>
+</div>
+<a name="1:66"><div class="section"><h4>66. cards.janet</h4></a>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>cards.janet</strong> <a href="whist.html#1:66">66</a>}</span>
+<pre class="prettyprint lang-janet">
+<span class="nocode pln">{Card to Text, <a href="whist.html#1:62">62</a>}</span>
+<span class="nocode pln">{Of Suit or Off, <a href="whist.html#1:63">63</a>}</span>
+<span class="nocode pln">{Enable Card Comparison, <a href="whist.html#1:65">65</a>}</span>
+<span class="nocode pln">{High Card, <a href="whist.html#1:64">64</a>}</span>
+</pre>
+
+
+
+</div>
+<h1> Appendix III</h1>
+
+</div>
+<a name="1:67"><div class="section"><h4>67. Appendix: Players</h4></a>
+<p>We need a little bit of business logic when it comes to handling
+players. In particular, we need a way to easily select the "next"
+player around the table, while optionally filtering out certain ones
+(in the case of the auction, we want to filter out players who have
+already passed).
+</p>
+<p>In Janet we can do this using fibers.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>players.janet</strong> <a href="whist.html#1:67">67</a>}</span>
+<pre class="prettyprint lang-janet">
+(defn next-player
+  [id players &amp;opt out-of]
+  
+  (var ind (find-index |(and (= ($0 :id) id)) players))
+  (let [f (fiber/new (fn []
+                       (while true
+                         (do
+                           (set ind (mod (inc ind) (length players)))
+                           (yield ind)))))]
+    (var found nil)
+    (while (not found)
+      (let [new-ind (resume f)
+            new-id ((players new-ind) :id)]
+        (if (or (nil? out-of) (in out-of (keyword new-id)))
+          (set found new-id))))
+    found))
+
+(defn of-team [players team] (-&gt;&gt; players
+                                  (filter |(= ($0 :team) team))
+                                  (map |($0 :id))))
+</pre>
+
+
+
+</div>
+<h1> Appendix IIII</h1>
+
+</div>
+<a name="1:68"><div class="section"><h4>68. Appendix: All Events</h4></a>
+
+<div class="codeblock">
+<span class="codeblock_name">{<strong>events.janet</strong> <a href="whist.html#1:68">68</a>}</span>
+<pre class="prettyprint lang-janet">
+(import players)
+# Hand side effects
+<span class="nocode pln">{Events: Draw, <a href="whist.html#1:14">14</a>}</span>
+# Game Side Effects
+<span class="nocode pln">{Events: End Game, <a href="whist.html#1:47">47</a>}</span>
+# Decorations
+<span class="nocode pln">{Events: Add Decoration, <a href="whist.html#1:15">15</a>}</span>
+<span class="nocode pln">{Events: Clear Decoration, <a href="whist.html#1:22">22</a>}</span>
+# Prompts
+<span class="nocode pln">{Events: Pick 1, <a href="whist.html#1:16">16</a>}</span>
+<span class="nocode pln">{Events: Prompt Play, <a href="whist.html#1:34">34</a>}</span>
+<span class="nocode pln">{Events: Prompt Discard, <a href="whist.html#1:28">28</a>}</span>
+# State labels
+<span class="nocode pln">{Events: Add Info, <a href="whist.html#1:35">35</a>}</span>
+</pre>
+
+
+
+</div>
+
+</div>
+</body>
